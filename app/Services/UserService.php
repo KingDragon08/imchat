@@ -3,6 +3,7 @@ namespace App\Services;
 use App\Models\UserModel;
 use App\Models\GroupsModel;
 use App\Models\BonusModel;
+use App\Models\ChatRoomsModel;
 use Cache;
 use Exception;
 use DB;
@@ -134,7 +135,8 @@ class UserService {
                 $fromUser->bonus = $fromUser->bonus - $amount;
             }
             $fromUser->save();
-            $toGroup = GroupsModel::select('id')->where('groupId', $toGroupId)->first();
+            // $toGroup = GroupsModel::select('id')->where('groupId', $toGroupId)->first();
+            $toGroup = ChatRoomsModel::select('id')->where('roomId', $toGroupId)->first();
             $bonusModel = new BonusModel();
             $bonusModel->from = $fromId;
             $bonusModel->to = $toGroup->id;
@@ -353,12 +355,71 @@ class UserService {
     }
 
     /**
+     * 获取红包结果
+     * @param  [type] $bonusId [description]
+     * @return [type]          [description]
+     */
+    public static function getBonusResult($bonusId) {
+        $ret = [
+            'opened' => false,
+            'joiner' => []
+        ];
+
+        $bonusKey = 'bonus-' . $bonusId;
+        $bonusInfoKey = 'bonus-info-' . $bonusId;
+        $bonusJoinersKey = 'bonus-joiners-' . $bonusId;
+        if (Cache::has($bonusInfoKey)) {
+            // 未过期且未抢完
+            $joiners = Redis::lrange($bonusJoinersKey, 0, Redis::llen($bonusJoinersKey));
+            foreach ($joiners as &$joiner) {
+                $joiner = json_decode($joiner, true);
+            }
+            $ret['opened'] = true;
+            $ret['joiners'] = $joiners;
+            
+            // 判断是否领完
+            $data = json_decode(Cache::get($bonusInfoKey), true);
+            if ($data['number'] == Redis::llen($bonusJoinersKey)) {
+                // 领完了回写数据库
+                $bonusModel = BonusModel::select('*')->where('id', $bonusId)->first();
+                $bonusModel->status = 1;
+                $bonusModel->joiner = json_encode($joiners);
+                $bonusModel->save();
+                Cache::forget($bonusInfoKey);
+                // 红包数据再缓存7天,方便对账
+                Redis::expire($bonusJoinersKey, 604800);
+            }
+            
+        } else {
+            // 已写回数据库
+            $ret['opened'] = true;
+            $bonus = BonusModel::select('joiner')->where('id', $bonusId)->get()->toArray()[0];
+            $ret['joiner'] = json_decode($bonus['joiner'], true);
+        }
+
+        return $ret;
+    }
+
+    /**
      * 获取用户头像信息
      * @param  string $username [description]
      * @return [type]           [description]
      */
     public static function getAvatar(string $username) {
         $data = UserModel::select(['id', 'username', 'nickname', 'avatar', 'pyqImg', 'sign'])
+                ->where('username', $username)->get()->toArray();
+        return $data[0];
+    }
+
+    /**
+     * 获取用户基础信息
+     * @param  string $username [description]
+     * @return [type]           [description]
+     */
+    public static function getUserInfo(string $username) {
+        $data = UserModel::select(['id', 'nickname', 'username', 'jifen', 
+                                    'bonus', 'created_at', 'avatar', 'pyqImg', 'sign',
+                                    'agent', 'phone', 'email'])
                 ->where('username', $username)->get()->toArray();
         return $data[0];
     }

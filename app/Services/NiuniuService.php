@@ -458,7 +458,8 @@ class NiuniuService {
         $userIds = array_keys($joiners);
         $bankerInfo = UserModel::select('*')->where('username', $game['banker'])->first();
         if (!in_array($userId, $userIds) && $userId != $bankerInfo->id) {
-            throw new Exception("未下注或该局已结束,不允许开包");
+            // throw new Exception("未下注或该局已结束,不允许开包");
+            return UserService::getBonusResult($bonusId);
         }
         // 庄家不能抢头包
         if ($userId == $bankerInfo->id) {
@@ -546,7 +547,10 @@ class NiuniuService {
                 $overtimeBonus[] = $item;
             }
         }
-
+        // 一个有效包都没有
+        if (empty($activeBonus)) {
+            $activeBonus = $overtimeBonus;
+        }
         // 无包处理
         foreach ($noBonusIds as $id) {
             $overtimeType = $config['userOvertime'];
@@ -1576,7 +1580,7 @@ class NiuniuService {
             $joinersKey = self::GAME_NAME . $roomId;
             Redis::expire($joinersKey, 0);
             // 结束本局游戏
-            $niuniuModel = NiuniuModel::select('*')->where('roomId', $roomId)->first();
+            $niuniuModel = NiuniuModel::select('*')->where('roomId', $roomId)->where('status', 0)->first();
             $niuniuModel->status = -1; // -1表示重推结束
             $niuniuModel->save();
             return 'ok';

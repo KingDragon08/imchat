@@ -51,6 +51,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::any('changeAvatar', 'UserController@changeAvatar');
         Route::any('changeUserInfo', 'UserController@changeUserInfo');
         Route::put('changePwd', 'UserController@changePwd');
+        Route::any('getUserInfo', 'UserController@getUserInfo');
     });
 
     Route::group(['prefix' => 'moments', 'namespace' => 'User'], function () {

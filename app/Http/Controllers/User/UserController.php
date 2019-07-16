@@ -108,7 +108,7 @@ class UserController extends Controller
             'amount' => 'required|numeric|min:1',
             'number' => 'required|int|min:1',
             'ext' => 'required|string',
-            'username' => 'required|string|exists:groups,groupId',
+            'username' => 'required|string',
             'type' => 'required|string'
         ]);
 
@@ -206,6 +206,25 @@ class UserController extends Controller
         }
     }
 
+    // 获取用户基础信息
+    public function getUserInfo(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'username' => 'required|string|exists:user,username'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['status' => 1, 'msg' => '参数校验失败']);
+        }
+
+        try {
+            $data = UserService::getUserInfo($request->username);
+            return response()->json(['status' => 0, 'msg' => 'ok', 'data' => $data]);
+        } catch (Exception $e) {
+            return response()->json(['status' => 1, 'msg' => $e->getMessage()]);
+        }
+    }
+
+
     public function search(Request $request) {
         $validator = Validator::make($request->all(), [
             'username' => 'required|string|exists:user,username'
@@ -252,7 +271,7 @@ class UserController extends Controller
             return response()->json(['status' => 1, 'msg' => '参数校验失败']);
         }
 
-        $keys = ['nickname', 'sign'];
+        $keys = ['nickname', 'sign', 'phone', 'email'];
         if (!in_array($request->key, $keys)) {
             return response()->json(['status' => 1, 'msg' => '参数校验失败']);   
         }
