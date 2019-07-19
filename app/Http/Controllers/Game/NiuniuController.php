@@ -179,7 +179,6 @@ class NiuniuController extends Controller {
             $data = NiuniuService::result($request->roomId);
             return response()->json(['status' => 0, 'msg' => 'ok', 'data' => $data]);
         } catch (Exception $e) {
-            dd($e);
             return response()->json(['status' => 1, 'msg' => $e->getMessage()]);
         }
     }

@@ -159,7 +159,6 @@ class NiuniuService {
             return ['id' => $model->id, 'msg' => implode('<br/>', $strs)];    
         } catch (Exception $e) {
             DB::rollback();
-            dd($e);
             throw new Exception($e->getMessage());
         }
 
