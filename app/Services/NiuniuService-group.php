@@ -14,7 +14,7 @@ use Cache;
 use Redis;
 use DB;
 
-class NiuniuService {
+class NiuniuService1 {
 
     const GAME_NAME = 'niuniu:';
 

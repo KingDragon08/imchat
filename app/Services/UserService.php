@@ -121,7 +121,8 @@ class UserService {
         string $type, // 红包类型,normal=>普通红包,shouqi=>拼手气红包
         float $amount, // 金额,normal时为单个金额,shouqi时为总金额
         int $number, // 个数
-        string $ext // 祝福语
+        string $ext, // 祝福语
+        string $chatType = 'group' // 聊天类型
     ) {
        DB::beginTransaction();
        try {
@@ -135,8 +136,12 @@ class UserService {
                 $fromUser->bonus = $fromUser->bonus - $amount;
             }
             $fromUser->save();
-            // $toGroup = GroupsModel::select('id')->where('groupId', $toGroupId)->first();
-            $toGroup = ChatRoomsModel::select('id')->where('roomId', $toGroupId)->first();
+            $toGroup = '';
+            if ($chatType == 'group') {
+                $toGroup = GroupsModel::select('id')->where('groupId', $toGroupId)->first();
+            } else {
+                $toGroup = ChatRoomsModel::select('id')->where('roomId', $toGroupId)->first();    
+            }
             $bonusModel = new BonusModel();
             $bonusModel->from = $fromId;
             $bonusModel->to = $toGroup->id;

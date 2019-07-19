@@ -121,7 +121,7 @@ class UserController extends Controller
         }
 
         try {
-            $id = UserService::groupBonus($request->id, $request->username, $request->type, floatval($request->amount), intval($request->number), $request->ext);
+            $id = UserService::groupBonus($request->id, $request->username, $request->type, floatval($request->amount), intval($request->number), $request->ext, 'group');
             return response()->json(['status' => 0, 'msg' => 'ok', 'data' => $id]);
         } catch (Exception $e) {
             return response()->json(['status' => 1, 'msg' => $e->getMessage()]);

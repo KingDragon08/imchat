@@ -372,7 +372,7 @@ class NiuniuService {
             // 给庄先加上红包钱再发红包
             $bankerInfo->bonus += $gameInfo['amount'];
             $bankerInfo->save();
-            $bonusId = UserService::groupBonus($bankerInfo['id'], $roomId, 'shouqi', $gameInfo['amount'], $gameInfo['number'], '牛牛红包');
+            $bonusId = UserService::groupBonus($bankerInfo['id'], $roomId, 'shouqi', $gameInfo['amount'], $gameInfo['number'], '牛牛红包', 'room');
             // 扣掉庄的积分
             $gameInfo['jifen'] -= $gameInfo['amount'];
         }
