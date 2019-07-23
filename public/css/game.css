@@ -1,0 +1,24 @@
+html, body {
+    color: #ba8414;
+    background: none;
+    /*background-image: url('../image/game/bg.png'); background-position: center center;
+    background-size: cover;*/
+}
+.aui-bar-nav {color: #ba8414; border-bottom: 1px solid #ba8414;}
+.header-nav {background: #2f3130;}
+.container {
+    width: 100%; height: auto; min-height: 140px;
+}
+.container .item {
+    width: 50%; float: left; height: 0; padding-top: 50%; position: relative;
+    overflow: hidden; margin-bottom: 14px;
+}
+.container .item img {
+    width: 80%; height: 80%; position: absolute; border-radius: 10%;
+    position: absolute; top: 2%; left: 10%; display: block;
+}
+.container .item p {
+    width: 90%; height: 15%; text-align: center; left: 5%;
+    position: absolute; top: 85%; color: #ffba00; display: block;
+    overflow: hidden; text-overflow: ellipsis;
+}

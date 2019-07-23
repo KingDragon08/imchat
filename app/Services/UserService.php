@@ -55,6 +55,10 @@ class UserService {
         // 创建token
         $token = md5(microtime(true));
         Cache::put($data['id'], $token, self::CACHE_EXPIRE_TIME);
+        session([
+            'id' => $data['id'],
+            'token' => $token
+        ]);
         $data['token'] = $token;
         $data['timestamp'] = time();
         return $data;
@@ -475,6 +479,27 @@ class UserService {
         }
         $user->password = md5($npwd);
         $user->save();
+    }
+
+    /**
+     * 从session中获取用户信息
+     * @return [type] [description]
+     */
+    public static function h5GetUserInfo() {
+        $id = session('id');
+        $token = session('token');
+        $data = UserModel::select(['id', 'nickname', 'username', 'jifen', 
+                                    'bonus', 'created_at', 'avatar', 'pyqImg', 'sign',
+                                    'agent', 'phone', 'email'])
+                    ->where('id', $id)
+                    ->get()->toArray();
+        if (empty($data)) {
+            throw new Exception("账户名不存在或密码错误");
+        }
+        $data = $data[0];
+        $data['token'] = $token;
+        $data['timestamp'] = time();
+        return $data;
     }
 
 

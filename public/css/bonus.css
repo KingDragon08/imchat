@@ -1,0 +1,54 @@
+.bonus-bg {
+    position: fixed; left: 0; right: 0; top: 0; bottom: 0;
+    background: rgba(255, 255, 255, 0.7); z-index: 999;
+}
+.bonus-ct {
+    position: absolute; left: 8%; right: 8%; top: 5%; bottom: 70px;
+    background: #f35543; border-radius: 10px; overflow: hidden;
+    color: #ffe4b4; z-index: 1000;
+}
+.border {
+    width: 100%; height: 100px; border-radius: 100%;
+    position: absolute; z-index: 9; box-shadow: 0 1px 6px #888;
+    bottom: 100px;
+}
+.border .hider {
+    height: 55px; background: #f35543; margin-top: -6px;
+}
+.open {
+    width: 100px; height: 100px; position: absolute;
+    left: 50%; margin-left: -50px; background: url('../image/icons/open.png') no-repeat center center;
+    background-size: cover;
+}
+.bonus-ct .l1 {
+    margin-top: 80px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.bonus-ct .l1 img {
+    display: inline;
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    border-radius: 2px;
+}
+.bonus-ct .l2 {
+    text-align: center;
+    font-size: 20px; width: 100%;
+    white-space: nowrap; text-overflow: ellipsis;
+    height: 30px; overflow: hidden;
+    line-height: 30px;
+    margin-top: 20px;
+}
+.close {
+    position: absolute; bottom: 10px; width: 50px; height: 50px;
+    text-align: center; border: 3px solid #e8712a; border-radius: 50%;
+    z-index: 1000; left: 50%; margin-left: -25px;
+}
+.close i {
+    font-size: 32px; color: #e8712a; font-weight: bold;
+}

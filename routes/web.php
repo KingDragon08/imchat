@@ -99,7 +99,27 @@ Route::group(['prefix' => 'common', 'namespace' => 'Common'], function () {
     Route::get('games', 'CommonController@games');
     Route::get('cfg', 'CommonController@config');
     Route::get('rooms', 'CommonController@rooms');
+    Route::get('avatar/{username}', 'CommonController@avatar');
 });
+
+Route::group(['prefix' => 'h5', 'namespace' => 'H5'], function () {
+    Route::get('login', 'H5Controller@login');
+});
+
+// 登录后才能访问的界面和接口
+Route::group(['middleware' => 'h5Auth', 'prefix' => 'h5'], function () {
+    Route::get('/', '\App\Http\Controllers\H5\H5Controller@index');
+    Route::get('/changePwd', '\App\Http\Controllers\H5\H5Controller@changePwd');
+    Route::get('/logout', '\App\Http\Controllers\H5\H5Controller@logout');
+    Route::get('/rooms', '\App\Http\Controllers\H5\H5Controller@rooms');
+    Route::get('/chat', '\App\Http\Controllers\H5\H5Controller@chat');
+    Route::get('cfg', '\App\Http\Controllers\H5\H5Controller@cfg');
+
+});
+
+
+
+
 
 
 

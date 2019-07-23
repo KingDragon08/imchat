@@ -1,0 +1,117 @@
+html,
+body {
+    width: 100%;
+    height: 100%;
+}
+
+.top {
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.top img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50px;
+}
+
+.name {
+    color: #f2ab18;
+    font-size: 18px;
+    height: 36px;
+    line-height: 36px;
+}
+
+.time {
+    color: #f2ab18;
+    font-size: 14px;
+    height: 24px;
+    line-height: 24px;
+}
+
+.jifen {
+    height: 70px;
+    clear: both;
+}
+
+.jifen .left,
+.jifen .right {
+    float: left;
+    width: 50%;
+    height: 70px;
+    color: #fff;
+    display: flex;
+}
+
+.jifen .left {
+    background: #484b4a;
+}
+
+.jifen .right {
+    background: #7b7e7c;
+}
+
+.jifen .left div,
+.jifen .right div {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.jifen img {
+    width: 100%;
+}
+.jifen p {
+    color: #fff;
+}
+
+.list {
+    width: 100%;
+    min-height: 3rem;
+    background: #fff;
+    height: calc(100% - 350px);
+}
+
+.list .item {
+    width: 100%;
+    min-height: 1.3rem;
+    display: flex;
+    padding-top: 10px;
+}
+
+.list .item .avatar {
+    flex: 1;
+    padding: 10px;
+    padding-top: 0;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+
+.list .item .avatar img {
+    max-width: 65%;
+    margin: 0 auto;
+}
+
+.list .item .content {
+    flex: 7;
+    border-bottom: 1px solid #ccc;
+    flex-direction: column;
+}
+
+.list .item .content .title {
+    font-size: 12px;
+    color: #999;
+    line-height: 20px;
+    height: 20px;
+}
+
+.list .item .content .value {
+    font-size: 14px;
+    color: #333;
+    line-height: 26px;
+    line-height: 26px;
+    margin-bottom: 6px;
+}

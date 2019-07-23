@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Common;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\CommonService;
+use App\Services\UserService;
 
 use Validator;
 use Exception;
@@ -81,6 +82,21 @@ class CommonController extends Controller {
         } catch (Exception $e) {
             return response()->json(array('status' => 1, 'msg' => $e->getMessage()));
         }
+    }
+
+    public function avatar(Request $request, $username) {
+        $validator = Validator::make(['username' => $username], [
+            'username' => 'required|string|exists:user,username'
+        ]);
+        $avatar = '';
+        if ($validator->fails()) {
+            $avatar = 'http://via.placeholder.com/200/000000/ff0000?text=FUCK';
+        } else {
+            $avatar = UserService::getAvatar($username)['avatar'];
+        }
+        return response(file_get_contents($avatar), 200, [
+            'Content-Type' => 'image',
+        ]);
     }
 
 
