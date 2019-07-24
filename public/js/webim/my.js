@@ -27,15 +27,18 @@ function initChat() {
             conn.fetchHistoryMessages({
                 queue: api.pageParam.params.conversationId,
                 isGroup: true,
-                count: 20,
+                count: 200,
                 success: function (messages) {
                     console.log(messages);
+                    vue.$data.messages = messages;
+                    setTimeout(function(){
+                        wchat_ToBottom();
+                    }, 100);
                 },
                 faile: function (e) {
                     console.log(e);
                 }
             });
-            sendRoomText('test1234');
         },
         onClosed: function(message) {
             console.log(message);
@@ -43,10 +46,16 @@ function initChat() {
         //收到文本消息
         onTextMessage: function(message) {
             console.log(message);
+            if (message.to == api.pageParam.params.conversationId) {
+                vue.$data.messages.push(message);
+                setTimeout(function(){
+                    wchat_ToBottom();
+                }, 100);
+            }
         }, 
         //收到图片消息
         onPictureMessage: function(message) {
-
+            console.log(message);
         }, 
         //本机网络连接成功
         onOnline: function() {
@@ -57,6 +66,16 @@ function initChat() {
         //失败回调
         onError: function(message) {
             console.log(message);
+            history.go(0);
         }
     });
 }
+
+// ...滚动聊天区底部
+function wchat_ToBottom(){setTimeout(function(){
+        $(".wc__chatMsg-panel").animate({scrollTop: $("#J__chatMsgList").height()}, 0);
+    }, 10);
+}
+
+
+

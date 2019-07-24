@@ -79,4 +79,33 @@ class H5Controller extends Controller
         return view('h5/cfg', ['data' => $data, 'title' => $request->key]);
     }
 
+    // 配置游戏
+    public function config(Request $request, $roomId) {
+        $validator = Validator::make(['roomId' => $roomId], [
+            'roomId' => 'required|exists:chatrooms,roomId'
+        ]);
+        $userInfo = UserService::h5GetUserInfo();
+        if ($validator->fails()) {
+            return '404';
+        } else {
+            return view('h5/config', ['roomId' => $roomId, 'userInfo' => $userInfo]);
+        }
+    }
+
+    // 开红包
+    public function result(Request $request, $roomId, $bonusId) {
+        $validator = Validator::make(['roomId' => $roomId, 'bonusId' => $bonusId], [
+            'roomId' => 'required|exists:chatrooms,roomId',
+            'bonusId' => 'required|exists:bonus,id'
+        ]);
+        $userInfo = UserService::h5GetUserInfo();
+        if ($validator->fails()) {
+            return '404';
+        } else {
+            return view('h5/result', ['roomId' => $roomId, 'bonusId' => $bonusId, 'userInfo' => $userInfo]);
+        }
+    }
+
+
+
 }

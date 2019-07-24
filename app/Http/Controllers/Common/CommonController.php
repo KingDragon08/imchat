@@ -94,7 +94,14 @@ class CommonController extends Controller {
         } else {
             $avatar = UserService::getAvatar($username)['avatar'];
         }
-        return response(file_get_contents($avatar), 200, [
+        $opts= [
+            "http" => [
+                "method"=>"GET",
+                "timeout"=>3
+            ],
+        ];
+        $context = stream_context_create($opts);
+        return response(file_get_contents($avatar, false, $context), 200, [
             'Content-Type' => 'image',
         ]);
     }

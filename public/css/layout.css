@@ -41,7 +41,7 @@
 .wc__headerBar .inner .back{background: url(../img/topbar/icon__back-white.png) no-repeat center;background-size:.4rem; width:1.02rem; position: relative;}
 .wc__headerBar .inner .barIco{width:1.02rem; position: relative;}
 .wc__headerBar .inner .u-one{background: url(../img/topbar/icon__user.png) no-repeat center; background-size:.4rem;}
-.wc__headerBar .inner .u-qun{background: url(../img/topbar/icon__users.png) no-repeat center; background-size:.4rem;}
+.wc__headerBar .inner .u-qun{background: url(../img/game/history.png) no-repeat center; background-size:.4rem;}
 .wc__headerBar .inner .sear{background: url(../img/topbar/icon__sear.png) no-repeat center; background-size:.4rem;}
 .wc__headerBar .inner .add{background: url(../img/topbar/icon__add.png) no-repeat center; background-size:.4rem;}
 
@@ -139,7 +139,7 @@
 .chatMsg-cnt ul li.others .content .msg{background-color: #fff; border-color: #f0f0f0;}
 .chatMsg-cnt ul li.others .content .msg:active, .chatMsg-cnt ul li.others .content .msg.taped{background-color: #f2f2f2; border-color:#e9e9e9;}
 .chatMsg-cnt ul li.me .content .author{text-align: right;}
-.chatMsg-cnt ul li.me .content .msg{float: right; background-color: #ffee5c; border-color: #f5dd25;}
+.chatMsg-cnt ul li.me .content .msg{float: right; background-color: #fff; border-color: #f0f0f0;}
 .chatMsg-cnt ul li.me .content .msg:active, .chatMsg-cnt ul li.me .content .msg.taped{background-color: #ecd412; border-color: #e0c600;}
 .chatMsg-cnt ul li .content .msg:before{content: ''; display: inline-block; border-style: solid; border-width: .01rem .01rem 0 0; height: .2rem; width: .2rem; position: absolute; top: .3rem;}
 .chatMsg-cnt ul li.others .content .msg:before{background: inherit; border-color: inherit; left: -.115rem; transform: translate(0, -50%) rotate(-135deg);}
@@ -168,13 +168,13 @@
 /* 编辑器 */
 .wc__editor-panel{padding: .15rem .25rem; align-items: flex-end;}
 .wc__editor-panel .wrap-editor{max-width: 100%;}
-.wc__editor-panel .wrap-editor .editor{background: none; border-bottom: 1px solid #e3e3e3; color: #333; caret-color: #ffd100; font-size: .28rem; padding: .1rem .15rem; overflow-y: auto; overflow-x: hidden; outline: none; word-wrap: break-word; word-break: break-all; line-height: .4rem; max-height: 2.3rem; max-width: 100%; transition: border-color .3s;}
-.wc__editor-panel .wrap-editor .editor:focus{border-bottom-color: #ffd100;}
+.wc__editor-panel .wrap-editor .editor{background: none; border-bottom: 1px solid #e3e3e3; color: #333; caret-color: #2f3130; font-size: .28rem; padding: .1rem .15rem; overflow-y: auto; overflow-x: hidden; outline: none; word-wrap: break-word; word-break: break-all; line-height: .4rem; max-height: 2.3rem; max-width: 100%; transition: border-color .3s;}
+.wc__editor-panel .wrap-editor .editor:focus{border-bottom-color: #2f3130;}
 .wc__editor-panel .wrap-editor .editor .face{vertical-align: middle; height: .4rem;}
 .wc__editor-panel .btn{margin-left: .15rem; height: .7rem; width: .7rem;}
 .wc__editor-panel .btn-emotion{background: url(../img/wchat/icon__emotion.png) no-repeat; background-size: cover;}
 .wc__editor-panel .btn-choose{background: url(../img/wchat/icon__choose.png) no-repeat; background-size: cover;}
-.wc__editor-panel .btn-submit{background: #ffd100; border: 0; border-radius: .05rem; color: #fff; font-size: .28rem; font-family: "Microsoft Yahei"; outline: none; margin-left: .2rem; margin-bottom: .04rem; padding: 0 .15rem; height: .6rem;}
+.wc__editor-panel .btn-submit{background: #2f3130; border: 0; border-radius: .05rem; color: #fff; font-size: .28rem; font-family: "Microsoft Yahei"; outline: none; margin-left: .2rem; margin-bottom: .04rem; padding: 0 .15rem; height: .6rem;}
 /* 选择区 */
 .wc__choose-panel{height: 5.8rem;}
 .wc__choose-panel .wrap-emotion{height: 100%;}

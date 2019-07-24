@@ -110,28 +110,43 @@ function startGame(index) {
 
 // 进入聊天界面
 function goGame(room) {
-    localStorage.setItem(room.roomId, JSON.stringify(room));
-    if (room.rules) {
-        var index = wcPop({
-            title: '规则说明',
-            content: room.rules,
-            shadeClose: false,
-            anim: 'fadeIn',
-            xclose: true,
-            btns: [
-                {
-                    text: '确定',
-                    style: 'color: #333',
-                    onTap() {
-                        wcPop.close(index);
-                        location.href = '/h5/chat?id=' + room.roomId + '&name=' + room.name;                
-                    }
-                }
-            ]
-        });
-    } else {
-        location.href = '/h5/chat?id=' + room.roomId + '&name=' + room.name;
-    }
+    // 获取房间详情
+    $.ajax({
+        url: '/ease/roomInfo',
+        method: 'post',
+        data: {
+            id: userInfo.id,
+            token: userInfo.token,
+            roomId: room.roomId
+        },
+        success: function(e) {
+            localStorage.setItem(room.roomId, JSON.stringify(e.data));
+            if (room.rules) {
+                var index = wcPop({
+                    title: '规则说明',
+                    content: room.rules,
+                    shadeClose: false,
+                    anim: 'fadeIn',
+                    xclose: true,
+                    btns: [
+                        {
+                            text: '确定',
+                            style: 'color: #333',
+                            onTap() {
+                                wcPop.close(index);
+                                location.href = '/h5/chat?id=' + room.roomId + '&name=' + room.name;                
+                            }
+                        }
+                    ]
+                });
+            } else {
+                location.href = '/h5/chat?id=' + room.roomId + '&name=' + room.name;
+            }
+        },
+        error: function(e) {
+            util.toast('网络错误,退出重试');
+        }
+    });
 }
 </script>
 

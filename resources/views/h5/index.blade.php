@@ -7,21 +7,21 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-touch-fullscreen" content="yes">
     <meta http-equiv="Access-Control-Allow-Origin" content="*">
-    <link rel="stylesheet" href="css/reset.css" />
-    <link rel="stylesheet" href="css/animate.css" />
-    <link rel="stylesheet" href="css/swiper-3.4.1.min.css" />
-    <link rel="stylesheet" href="css/layout.css" />
-    <link rel="stylesheet" href="css/game.css" />
-    <link rel="stylesheet" href="css/home.css" />
-    <link rel="stylesheet" href="css/aui.css" />
+    <link rel="stylesheet" href="../css/reset.css" />
+    <link rel="stylesheet" href="../css/animate.css" />
+    <link rel="stylesheet" href="../css/swiper-3.4.1.min.css" />
+    <link rel="stylesheet" href="../css/layout.css" />
+    <link rel="stylesheet" href="../css/game.css" />
+    <link rel="stylesheet" href="../css/home.css" />
+    <link rel="stylesheet" href="../css/aui.css" />
     
-    <script src="js/jquery-1.9.1.min.js"></script>
-    <script src="js/zepto.min.js"></script>
-    <script src="js/fontSize.js"></script>
-    <script src="js/swiper-3.4.1.min.js"></script>
-    <script src="js/wcPop/wcPop.js"></script>
-    <script src="js/TouchSlide.1.1.js"></script>
-    <script src="js/util.js"></script>
+    <script src="../js/jquery-1.9.1.min.js"></script>
+    <script src="../js/zepto.min.js"></script>
+    <script src="../js/fontSize.js"></script>
+    <script src="../js/swiper-3.4.1.min.js"></script>
+    <script src="../js/wcPop/wcPop.js"></script>
+    <script src="../js/TouchSlide.1.1.js"></script>
+    <script src="../js/util.js"></script>
     
     <style>
         .focus{ width:100%; height:150px;  margin:0 auto; position:relative; overflow:hidden;   }

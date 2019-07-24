@@ -1,6 +1,6 @@
 .bonus-bg {
     position: fixed; left: 0; right: 0; top: 0; bottom: 0;
-    background: rgba(255, 255, 255, 0.7); z-index: 999;
+    background: rgba(255, 255, 255, 0.7); z-index: 999999;
 }
 .bonus-ct {
     position: absolute; left: 8%; right: 8%; top: 5%; bottom: 70px;
@@ -17,7 +17,7 @@
 }
 .open {
     width: 100px; height: 100px; position: absolute;
-    left: 50%; margin-left: -50px; background: url('../image/icons/open.png') no-repeat center center;
+    left: 50%; margin-left: -50px; background: url('../img/game/open.png') no-repeat center center;
     background-size: cover;
 }
 .bonus-ct .l1 {
