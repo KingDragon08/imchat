@@ -106,6 +106,8 @@ Route::group(['prefix' => 'h5', 'namespace' => 'H5'], function () {
     Route::get('login', 'H5Controller@login');
 });
 
+Route::get('app/download', '\App\Http\Controllers\H5\H5Controller@login');
+
 // 登录后才能访问的界面和接口
 Route::group(['middleware' => 'h5Auth', 'prefix' => 'h5'], function () {
     Route::get('/', '\App\Http\Controllers\H5\H5Controller@index');
