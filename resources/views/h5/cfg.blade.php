@@ -38,5 +38,4 @@
 </body>
 <script src="../js/jquery-1.9.1.min.js"></script>
 <script src="../js/util.js"></script>
-<script src="../js/vue.min.js"></script>
 </html>

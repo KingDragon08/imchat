@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Services\UserService;
 use App\Services\CommonService;
+use App\Services\NiuniuService;
 
 use Validator;
 
@@ -106,6 +107,31 @@ class H5Controller extends Controller
         }
     }
 
+    // 历史列表
+    public function history(Request $request, $roomId) {
+        $validator = Validator::make(['roomId' => $roomId], [
+            'roomId' => 'required|exists:chatrooms,roomId'
+        ]);
+        if ($validator->fails()) {
+            return '404';
+        } else {
+            $data = NiuNiuService::getHistory($roomId);
+            return view('h5/history', ['roomId' => $roomId, 'data' => $data]);
+        }
+    }
 
+    // 历史详情
+    public function hisDetail(Request $request, $roomId, $gameId) {
+        $validator = Validator::make(['roomId' => $roomId, 'gameId' => $gameId], [
+            'roomId' => 'required|exists:game_niuniu,roomId',
+            'gameId' => 'required|exists:game_niuniu,id'
+        ]);
+        if ($validator->fails()) {
+            return '404';
+        } else {
+            $data = NiuNiuService::historyDetail($roomId, $gameId);
+            return view('h5/historyDetail', ['data' => $data]);
+        }
+    }
 
 }

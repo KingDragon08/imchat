@@ -60,7 +60,7 @@
                 <div class="inner flexbox">
                     <a class="back splitline" href="javascript:;" onclick="history.back(-1);"></a>
                     <h2 class="barTit flex1" id="title" style="text-align: left; margin-left: 0.25rem;">{{$title}}</h2>
-                    <a class="barIco u-qun" href="javascript:;"></a>
+                    <a class="barIco u-qun" href="/h5/history/{{$conversationId}}"></a>
                 </div>
             </div>
             <!-- //微聊消息上墙面板 -->

@@ -118,7 +118,8 @@ Route::group(['middleware' => 'h5Auth', 'prefix' => 'h5'], function () {
     Route::get('cfg', '\App\Http\Controllers\H5\H5Controller@cfg');
     Route::get('config/{roomId}', '\App\Http\Controllers\H5\H5Controller@config');
     Route::get('result/{roomId}/{bonusId}', '\App\Http\Controllers\H5\H5Controller@result');
-
+    Route::get('history/{roomId}', '\App\Http\Controllers\H5\H5Controller@history');
+    Route::get('hisDetail/{roomId}/{gameId}', '\App\Http\Controllers\H5\H5Controller@hisDetail');
 });
 
 

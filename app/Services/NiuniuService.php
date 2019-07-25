@@ -464,7 +464,8 @@ class NiuniuService {
         if ($userId == $bankerInfo->id) {
             $bonusJoinersKey = 'bonus-joiners-' . $bonusId;
             if (Redis::llen($bonusJoinersKey) == 0) {
-                throw new Exception("庄家不能抢头包");
+                // throw new Exception("庄家不能抢头包");
+                return UserService::getBonusResult($bonusId);
             }
         }
         return UserService::openGroupBonus($bonusId, $userId);
@@ -502,6 +503,7 @@ class NiuniuService {
             $joiners[$i] = json_decode($joiners[$i], true);
             $tmp[$joiners[$i]['userId']] = $joiners[$i];
         }
+        $joiners4Result = $joiners;
         $joiners = $tmp;
         $joinersIds = array_keys($joiners);
         $joinersIds[] = $bankerInfo->id; // 把庄也加进去
@@ -1040,6 +1042,7 @@ class NiuniuService {
             $niuniuModel = NiuniuModel::select('*')->where('id', $game['id'])->first();
             $niuniuModel->status = 1;
             $niuniuModel->result = implode('<br/>', $strs);
+            $niuniuModel->joiners = json_encode($joiners4Result);
             $niuniuModel->save();
             DB::commit();
             return implode('<br/>', $strs);
@@ -1588,6 +1591,35 @@ class NiuniuService {
         throw new Exception("红包已发送,不可以重推");
     }
 
+    /**
+     * 获取历史游戏列表
+     * @param  [type] $roomId [description]
+     * @return [type]         [description]
+     */
+    public static function getHistory($roomId) {
+        $data = NiuniuModel::select(['id', 'banker', 'timestamp'])->where('roomId', $roomId)->where('status', 1)
+                ->orderBy('id', 'desc')->limit(100)->get()->toArray();
+        for ($i = 0; $i < count($data); $i++) {
+            $data[$i]['timestamp'] = date("Y-m-d H:i:s", $data[$i]['timestamp']);
+        }
+        return $data;
+    }
+
+    /**
+     * 获取历史游戏详情数据
+     * @param  [type] $roomId [description]
+     * @param  [type] $gameId [description]
+     * @return [type]         [description]
+     */
+    public static function historyDetail($roomId, $gameId) {
+        $data = NiuniuModel::select('*')->where('id', $gameId)->where('roomId', $roomId)
+                ->get()->toArray();
+        if (empty($data)) {
+            throw new Exception("Error Input");
+        }
+        $data[0]['timestamp'] = date('Y-m-d H:i:s', $data[0]['timestamp']);
+        return $data[0];
+    }
 
 
 }
