@@ -45,6 +45,7 @@
         position: fixed; right:0; bottom:0;
         min-width:100%; min-height:100%; width: auto;height:
         auto;z-index:-100; background-size: cover;
+        background-image: url(../img/game/login_video.gif);
     }
     .aui-list-item:active {
         background: none !important;
@@ -64,7 +65,8 @@
 </head>
 
 <body>
-    <video muted autoplay="autoplay" loop="loop" id="bgvid" src="../img/game/login_video.mp4"></video>
+    <!-- <video muted autoplay="autoplay" loop="loop" id="bgvid" src="../img/game/login_video.mp4" webkit-playsinline="true"></video> -->
+    <div id="bgvid"></div>
     <div class="logo">
         <img src="../img/game/logo.png" width="120">
     </div>
