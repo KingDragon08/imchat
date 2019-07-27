@@ -134,7 +134,7 @@ function goGame(room) {
                             style: 'color: #333',
                             onTap() {
                                 wcPop.close(index);
-                                location.href = '/h5/chat?id=' + room.roomId + '&name=' + room.name;                
+                                location.href = '/h5/chat?id=' + room.roomId + '&name=' + room.name;
                             }
                         }
                     ]

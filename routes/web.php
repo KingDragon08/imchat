@@ -90,6 +90,10 @@ Route::group(['middleware' => 'auth'], function () {
             Route::any('/list', 'NiuniuController@list');
             // 重推
             Route::any('/reset', 'NiuniuController@reset');
+            // 游戏结果列表
+            Route::any('/history', 'NiuniuController@history');
+            // 游戏结果详情
+            Route::any('/historyDetail', 'NiuniuController@historyDetail');
         });
     });
 });

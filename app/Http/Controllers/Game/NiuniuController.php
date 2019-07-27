@@ -241,6 +241,51 @@ class NiuniuController extends Controller {
         }
     }
 
+    /**
+     * 历史记录列表
+     * @param  Request $request [description]
+     * @return json
+     */
+    public function history(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'roomId' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['status' => 1, 'msg' => '参数校验失败']);
+        }
+
+        try {
+            $data = NiuniuService::getHistory($request->roomId);
+            return response()->json(['status' => 0, 'msg' => 'ok', 'data' => $data]);
+        } catch (Exception $e) {
+            return response()->json(['status' => 1, 'msg' => $e->getMessage()]);
+        }   
+    }
+
+    /**
+     * 历史记录详情
+     * @param  Request $request [description]
+     * @return json
+     */
+    public function historyDetail(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'roomId' => 'required|exists:game_niuniu,roomId',
+            'gameId' => 'required|exists:game_niuniu,id'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['status' => 1, 'msg' => '参数校验失败']);
+        }
+
+        try {
+            $data = NiuNiuService::historyDetail($request->roomId, $request->gameId);
+            return response()->json(['status' => 0, 'msg' => 'ok', 'data' => $data]);
+        } catch (Exception $e) {
+            return response()->json(['status' => 1, 'msg' => $e->getMessage()]);
+        }   
+    }
+
 
 
 
