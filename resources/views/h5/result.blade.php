@@ -136,7 +136,7 @@
             },
             mounted: function() {
                 this.init();
-                // this.startInterval();
+                this.startInterval();
             },
             beforeDestroy: function() {
                 clearInterval(this.interval);

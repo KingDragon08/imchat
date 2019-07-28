@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Services\UserService;
 use App\Services\CommonService;
 use App\Services\NiuniuService;
+use App\Services\EaseService;
 
 use Validator;
 
@@ -64,7 +65,11 @@ class H5Controller extends Controller
             return 403;
         }
         $userInfo = UserService::h5GetUserInfo();
-        return view('h5/chat', ['userInfo' => $userInfo, 'title' => $request->name, 'conversationId' => $request->id]);
+        $roomInfo = EaseService::roomInfo($request->id);
+        return view('h5/chat', ['userInfo' => $userInfo, 
+                                'title' => $request->name, 
+                                'conversationId' => $request->id, 
+                                'roomInfo' => $roomInfo]);
     }
 
     // 配置项

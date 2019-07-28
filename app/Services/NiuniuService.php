@@ -80,38 +80,66 @@ class NiuniuService {
                 if ($data['banker'] != $banker) {
                     // 将上一场庄的积分退还
                     $lastBankerModel = UserModel::select('*')->where('username', $data['banker'])->first();
-                    $lastBankerModel->bonus += $data['jifen'];
+                    $lastBankerModel->jifen += $data['jifen'];
                     $lastBankerModel->save();
                     // 将本场庄的积分扣除        
                     $data['startJifen'] = $jifen * 100;
-                    $currentBankerModel->bonus -= $jifen * 100;
-                    if ($currentBankerModel->bonus < 0) {
+                    $currentBankerModel->jifen -= $jifen * 100;
+                    if ($currentBankerModel->jifen < 0) {
                         throw new Exception("上庄积分不足");
                     }
                     $currentBankerModel->save();
                     $data['jifen'] = $jifen * 100;
                     // 上庄抽水
-                    $choushui = intval($jifen * 100 * $config['shangzhuangchoushui']); // 分
+                    $choushui = ceil($jifen * $config['shangzhuangchoushui']) * 100; // 分
                     $data['jifen'] -= $choushui;
-                    $groupOwnerModel->bonus += $choushui; // 水钱归群主
+                    $groupOwnerModel->jifen += $choushui; // 水钱归群主
                     $groupOwnerModel->save();
-                    // 清空庄家结果
-                    $data['bankerResult'] = [];
+                    // 清空庄家结果,换庄也不清空结果
+                    // $data['bankerResult'] = [];
+                } else {
+                    // 续庄抽水,剩下的积分里面抽
+                    if ($jifen == 0) {
+                        $choushui = ceil($data['jifen'] * $config['shangzhuangchoushui'] / 100) * 100; // 分
+                        $data['jifen'] -= $choushui;
+                        if ($data['jifen'] < 0) {
+                            throw new Exception("续庄积分不足");
+                        }
+                        $groupOwnerModel->jifen += $choushui; // 水钱归群主
+                        $groupOwnerModel->save();    
+                    } else {
+                        // 新的续庄积分
+                        // 将剩余的积分退还
+                        $currentBankerModel->jifen += $data['jifen'];
+                        // 将本场的积分扣除
+                        $data['startJifen'] = $jifen * 100;
+                        $currentBankerModel->jifen -= $jifen * 100;
+                        if ($currentBankerModel->jifen < 0) {
+                            throw new Exception("续庄积分不足");
+                        }
+                        $currentBankerModel->save();
+                        $data['jifen'] = $jifen * 100;
+                        // 续庄抽水
+                        $choushui = ceil($jifen * $config['shangzhuangchoushui']) * 100; // 分
+                        $data['jifen'] -= $choushui;
+                        $groupOwnerModel->jifen += $choushui; // 水钱归群主
+                        $groupOwnerModel->save();
+                    }
                 }
             } else {
                 // 第一局
                 // 将本场庄的积分扣除
                 $data['startJifen'] = $jifen * 100;
-                $currentBankerModel->bonus -= $jifen * 100;
-                if ($currentBankerModel->bonus < 0) {
+                $currentBankerModel->jifen -= $jifen * 100;
+                if ($currentBankerModel->jifen < 0) {
                     throw new Exception("上庄积分不足");
                 }
                 $currentBankerModel->save();
                 $data['jifen'] = $jifen * 100;
                 // 上庄抽水
-                $choushui = intval($jifen * 100 * $config['shangzhuangchoushui']); // 分
+                $choushui = ceil($data['jifen'] * $config['shangzhuangchoushui']) * 100; // 分
                 $data['jifen'] -= $choushui;
-                $groupOwnerModel->bonus += $choushui; // 水钱归群主
+                $groupOwnerModel->jifen += $choushui; // 水钱归群主
                 $groupOwnerModel->save();
                 // 初始化庄家结果
                 $data['bankerResult'] = [];
@@ -180,7 +208,7 @@ class NiuniuService {
         }
         $game = json_decode($game, true);
         if ($game['bonusId'] != -1) {
-            throw new Exception("已停止下注");
+            throw new Exception("游戏未开始或已停止下注");
         }
         // 获取游戏配置
         $config = ChatRoomsModel::select('cfg')->where('roomId', $roomId)->first()->cfg;
@@ -377,7 +405,12 @@ class NiuniuService {
         }
         // 包费扣除方式->扣群主
         if ($config['bonusFee'] == 'group') {
-            $bonusId = UserService::groupBonus($groupOwnerModel->id, $roomId, 'shouqi', $gameInfo['amount'], $gameInfo['number'], '牛牛红包');
+            // 给群主先加上红包钱再发红包
+            $groupOwnerModel->bonus += $gameInfo['amount'];
+            // 减掉群主的积分
+            $groupOwnerModel->jifen -= $gameInfo['amount'];
+            $groupOwnerModel->save();
+            $bonusId = UserService::groupBonus($groupOwnerModel->id, $roomId, 'shouqi', $gameInfo['amount'], $gameInfo['number'], '牛牛红包', 'room');
         }
         // 包费扣除方式->自认包费
         if ($config['bonusFee'] == 'every') {
@@ -385,7 +418,7 @@ class NiuniuService {
              * 非常重要
              */
             // 上线后需要设置一个专门用于扣钱的账号
-            $bonusId = UserService::groupBonus(10, $roomId, 'shouqi', $gameInfo['amount'], $gameInfo['number'], '牛牛红包');
+            $bonusId = UserService::groupBonus(10, $roomId, 'shouqi', $gameInfo['amount'], $gameInfo['number'], '牛牛红包', 'room');
             /**
              * 非常重要
              */
@@ -713,14 +746,19 @@ class NiuniuService {
             // 按下注额度收服务费
             if ($config['serverFeeType'] == 'bets') {
                 $serverFee = array_sum(array_column($joiners, 'bet')) * $config['serverFee'];
+                // 向上取整
+                $serverFee = ceil($serverFee / 100) * 100;
             }
             // 庄抽水
             $bankerChoushui = 0;
             if ($config['bankerChoushui'] == 'every') {
-                $bankerChoushui = abs($bankerCounter) * $config['bankerChoushuiRate'];
+                // 向上取整抽水
+                $bankerChoushui = ceil(abs($bankerCounter) * $config['bankerChoushuiRate'] / 100) * 100;
             } else {
+                // 赢抽
                 if ($bankerCounter > 0) {
-                    $bankerChoushui = abs($bankerCounter) * $config['bankerChoushuiRate'];
+                    // 向上取整抽水
+                    $bankerChoushui = ceil($bankerCounter * $config['bankerChoushuiRate'] / 100) * 100;
                 }
             }
             $chi = 0;
@@ -750,6 +788,8 @@ class NiuniuService {
                         $bankerJifen -= $tmp;
                         // 抽水
                         $joiners[$i]['choushui'] = $tmp * $joiner['fee'];
+                        // 向上取整抽水
+                        $joiners[$i]['choushui'] = ceil($joiners[$i]['choushui'] / 100) * 100;
                         // 红包钱
                         if ($config['bonusFee'] == 'every') {
                             $joiners[$i]['bonus'] = $config['bonus'] * 100;
@@ -764,10 +804,10 @@ class NiuniuService {
                         $strs[] = '------------------------------------';
                         $str = '🉐【' . $userInfo->nickname . '】';
                         if ($joiners[$i]['choushui'] > 0) {
-                            $str .= ' 抽水' . round($joiners[$i]['choushui'] / 100, 2);
+                            $str .= ' 抽水' . ($joiners[$i]['choushui'] / 100);
                         }
                         if ($joiners[$i]['bonus'] > 0) {
-                            $str .= ' 包费' . round($joiners[$i]['bonus'] / 100, 2);
+                            $str .= ' 包费' . ($joiners[$i]['bonus'] / 100);
                         }
                         $strs[] = $str;
                         $strs[] = '抢:' 
@@ -775,16 +815,18 @@ class NiuniuService {
                                     . '->' 
                                     . $joiner['name'] . ',' . $joiner['rate']
                                     . ' ' . ($joiner['type'] == 'normal' ? '押' : '梭哈') . $joiner['bet']
-                                    . ' 赢' . round($tmp / 100, 2);
-                        $strs[] = '上局:' . round($userInfo->bonus / 100, 2) . ' 本局:' . round(($userInfo->bonus + $tmp) / 100, 2);
-                        $userInfo->bonus += $tmp;
+                                    . ' 赢' . ($tmp / 100);
+                        $strs[] = '上局:' . floor($userInfo->jifen / 100) . ' 本局:' . floor(($userInfo->jifen + $tmp) / 100);
+                        $userInfo->jifen += $tmp;
                         $userInfo->save();
                      } else {
                         $pei += 1;
                         // 能赔的最后一个
                         $tmp = $bankerJifen;
                         // 抽水
-                        $joiners[$i]['choushui'] = intval($tmp * $joiner['fee']);
+                        $joiners[$i]['choushui'] = $tmp * $joiner['fee'];
+                        // 向上取整抽水
+                        $joiners[$i]['choushui'] = ceil($joiners[$i]['choushui'] / 100) * 100;
                         // 红包钱
                         if ($config['bonusFee'] == 'every') {
                             $joiners[$i]['bonus'] = $config['bonus'] * 100;
@@ -799,10 +841,10 @@ class NiuniuService {
                         $strs[] = '------------------------------------';
                         $str = '🉐【' . $userInfo->nickname . '】';
                         if ($joiners[$i]['choushui'] > 0) {
-                            $str .= ' 抽水' . round($joiners[$i]['choushui'] / 100, 2);
+                            $str .= ' 抽水' . ($joiners[$i]['choushui'] / 100);
                         }
                         if ($joiners[$i]['bonus'] > 0) {
-                            $str .= ' 包费' . round($joiners[$i]['bonus'] / 100, 2);
+                            $str .= ' 包费' . ($joiners[$i]['bonus'] / 100);
                         }
                         $strs[] = $str;
                         $strs[] = '抢:' 
@@ -810,9 +852,9 @@ class NiuniuService {
                                     . '->' 
                                     . $joiner['name'] . ',' . $joiner['rate']
                                     . ' ' . ($joiner['type'] == 'normal' ? '押' : '梭哈') . $joiner['bet']
-                                    . ' 赢' . round($tmp / 100, 2);
-                        $strs[] = '上局:' . round($userInfo->bonus / 100, 2) . ' 本局:' . round(($userInfo->bonus + $tmp) / 100, 2);
-                        $userInfo->bonus += $tmp;
+                                    . ' 赢' . ($tmp / 100);
+                        $strs[] = '上局:' . floor($userInfo->jifen / 100) . ' 本局:' . floor(($userInfo->jifen + $tmp) / 100);
+                        $userInfo->jifen += $tmp;
                         $userInfo->save();
                         break;
                      }
@@ -841,8 +883,8 @@ class NiuniuService {
                                     . ' ' . ($joiner['type'] == 'normal' ? '押' : '梭哈') . $joiner['bet']
                                     . ' 喝水';
                         
-                        $strs[] = '上局:' . round($userInfo->bonus / 100, 2) . ' 本局:' . round(($userInfo->bonus - $joiners[$i]['bonus']) / 100, 2);
-                        $userInfo->bonus -= $joiners[$i]['bonus'];
+                        $strs[] = '上局:' . floor($userInfo->jifen / 100) . ' 本局:' . floor(($userInfo->jifen - $joiners[$i]['bonus']) / 100);
+                        $userInfo->jifen -= $joiners[$i]['bonus'];
                         $userInfo->save();
                     }
                     // 平的正常处理
@@ -864,8 +906,8 @@ class NiuniuService {
                                     . $joiner['name'] . ',' . $joiner['rate']
                                     . ' ' . ($joiner['type'] == 'normal' ? '押' : '梭哈') . $joiner['bet'];
 
-                        $strs[] = '上局:' . round($userInfo->bonus / 100, 2) . ' 本局:' . round(($userInfo->bonus - $joiners[$i]['bonus']) / 100, 2);
-                        $userInfo->bonus -= $joiners[$i]['bonus'];
+                        $strs[] = '上局:' . floor($userInfo->jifen / 100) . ' 本局:' . floor(($userInfo->jifen - $joiners[$i]['bonus']) / 100);
+                        $userInfo->jifen -= $joiners[$i]['bonus'];
                         $userInfo->save();
                     }
                     // 输的进行计算
@@ -873,8 +915,11 @@ class NiuniuService {
                         $chi += 1;
                         $tmp = $joiner['user'];
                         // 抽水
+                        $joiners[$i]['choushui'] = 0;
                         if ($config['xianChoushui'] == 'every') {
                             $joiners[$i]['choushui'] = -$tmp * $joiner['fee'];
+                            // 向上取整抽水
+                            $joiners[$i]['choushui'] = ceil($joiners[$i]['choushui'] / 100) * 100;
                         }
                         // 红包钱
                         if ($config['bonusFee'] == 'every') {
@@ -886,10 +931,10 @@ class NiuniuService {
 
                         $str = '💀【' . $userInfo->nickname . '】';
                         if ($joiners[$i]['choushui'] > 0) {
-                            $str .= ' 抽水' . round($joiners[$i]['choushui'] / 100, 2);
+                            $str .= ' 抽水' . ($joiners[$i]['choushui'] / 100);
                         }
                         if ($joiners[$i]['bonus'] > 0) {
-                            $str .= ' 包费' . round($joiners[$i]['bonus'] / 100, 2);
+                            $str .= ' 包费' . ($joiners[$i]['bonus'] / 100);
                         }
                         $strs[] = $str;
                         $strs[] = '抢:' 
@@ -897,11 +942,11 @@ class NiuniuService {
                                     . '->' 
                                     . $joiner['name'] . ',' . $joiner['rate']
                                     . ' ' . ($joiner['type'] == 'normal' ? '押' : '梭哈') . $joiner['bet']
-                                    . ' 输' . round(abs($tmp / 100), 2);
-                        $strs[] = '上局:' . round($userInfo->bonus / 100, 2) . ' 本局:' 
-                                    . round(($userInfo->bonus + $tmp - $joiners[$i]['choushui'] - $joiners[$i]['bonus']) / 100, 2);
+                                    . ' 输' . abs($tmp / 100);
+                        $strs[] = '上局:' . floor($userInfo->jifen / 100) . ' 本局:' 
+                                    . floor(($userInfo->jifen + $tmp - $joiners[$i]['choushui'] - $joiners[$i]['bonus']) / 100);
                         
-                        $userInfo->bonus = $userInfo->bonus + $tmp - $joiners[$i]['choushui'] - $joiners[$i]['bonus'];
+                        $userInfo->jifen = $userInfo->jifen + $tmp - $joiners[$i]['choushui'] - $joiners[$i]['bonus'];
                         $userInfo->save();
                     }
                 }
@@ -918,7 +963,7 @@ class NiuniuService {
                         $tmp = $joiner['user'];
                         $bankerJifen -= $tmp;
                         // 抽水
-                        $joiners[$i]['choushui'] = intval($tmp * $joiner['fee']);
+                        $joiners[$i]['choushui'] = ceil($tmp * $joiner['fee'] / 100) * 100;
                         // 红包钱
                         if ($config['bonusFee'] == 'every') {
                             $joiners[$i]['bonus'] = $config['bonus'] * 100;
@@ -928,15 +973,13 @@ class NiuniuService {
                         // 减红包钱
                         $tmp -= $joiners[$i]['bonus'];
 
-                        $userInfo = UserModel::select('*')->where('id', $joiner['userId'])->first();
-
                         $strs[] = '------------------------------------';
                         $str = '🉐【' . $userInfo->nickname . '】';
                         if ($joiners[$i]['choushui'] > 0) {
-                            $str .= ' 抽水' . round($joiners[$i]['choushui'] / 100, 2);
+                            $str .= ' 抽水' . ($joiners[$i]['choushui'] / 100);
                         }
                         if ($joiners[$i]['bonus'] > 0) {
-                            $str .= ' 包费' . round($joiners[$i]['bonus'] / 100, 2);
+                            $str .= ' 包费' . ($joiners[$i]['bonus'] / 100);
                         }
                         $strs[] = $str;
                         $strs[] = '抢:' 
@@ -944,9 +987,9 @@ class NiuniuService {
                                     . '->' 
                                     . $joiner['name'] . ',' . $joiner['rate']
                                     . ' ' . ($joiner['type'] == 'normal' ? '押' : '梭哈') . $joiner['bet']
-                                    . ' 赢' . round($tmp / 100, 2);
-                        $strs[] = '上局:' . round($userInfo->bonus / 100, 2) . ' 本局:' . round(($userInfo->bonus + $tmp) / 100, 2);
-                        $userInfo->bonus += $tmp;
+                                    . ' 赢' . ($tmp / 100);
+                        $strs[] = '上局:' . floor($userInfo->jifen / 100) . ' 本局:' . floor(($userInfo->bonus + $tmp) / 100);
+                        $userInfo->jifen += $tmp;
                         $userInfo->save();
                     }
                     // 平
@@ -957,8 +1000,6 @@ class NiuniuService {
                         if ($config['bonusFee'] == 'every') {
                             $joiners[$i]['bonus'] = $config['bonus'] * 100;
                         }
-
-                        $userInfo = UserModel::select('*')->where('id', $joiner['userId'])->first();
                         $strs[] = '------------------------------------';
                         $strs[] = '🈴【' . $userInfo->nickname . '】';
 
@@ -968,8 +1009,8 @@ class NiuniuService {
                                     . $joiner['name'] . ',' . $joiner['rate']
                                     . ' ' . ($joiner['type'] == 'normal' ? '押' : '梭哈') . $joiner['bet'];
 
-                        $strs[] = '上局:' . round($userInfo->bonus / 100, 2) . ' 本局:' . round(($userInfo->bonus - $joiners[$i]['bonus']) / 100, 2);
-                        $userInfo->bonus -= $joiners[$i]['bonus'];
+                        $strs[] = '上局:' . floor($userInfo->jifen / 100) . ' 本局:' . floor(($userInfo->jifen - $joiners[$i]['bonus']) / 100);
+                        $userInfo->jifen -= $joiners[$i]['bonus'];
                         $userInfo->save();
                     }
                     // 输
@@ -977,22 +1018,24 @@ class NiuniuService {
                         $chi += 1;
                         $tmp = $joiner['user'];
                         // 抽水
+                        $joiners[$i]['choushui'] = 0;
                         if ($config['xianChoushui'] == 'every') {
                             $joiners[$i]['choushui'] = -$tmp * $joiner['fee'];
+                            // 向上取整抽水
+                            $joiners[$i]['choushui'] = ceil($joiners[$i]['choushui'] / 100) * 100;
                         }
                         // 红包钱
                         if ($config['bonusFee'] == 'every') {
                             $joiners[$i]['bonus'] = $config['bonus'] * 100;
                         }
 
-                        $userInfo = UserModel::select('*')->where('id', $joiner['userId'])->first();
                         $strs[] = '------------------------------------';
                         $str = '💀【' . $userInfo->nickname . '】';
                         if ($joiners[$i]['choushui'] > 0) {
-                            $str .= ' 抽水' . round($joiners[$i]['choushui'] / 100, 2);
+                            $str .= ' 抽水' . ($joiners[$i]['choushui'] / 100);
                         }
                         if ($joiners[$i]['bonus'] > 0) {
-                            $str .= ' 包费' . round($joiners[$i]['bonus'] / 100, 2);
+                            $str .= ' 包费' . ($joiners[$i]['bonus'] / 100);
                         }
                         $strs[] = $str;
                         $strs[] = '抢:' 
@@ -1000,11 +1043,11 @@ class NiuniuService {
                                     . '->' 
                                     . $joiner['name'] . ',' . $joiner['rate']
                                     . ' ' . ($joiner['type'] == 'normal' ? '押' : '梭哈') . $joiner['bet']
-                                    . ' 输' . round(abs($tmp / 100), 2);
-                        $strs[] = '上局:' . round($userInfo->bonus / 100, 2) . ' 本局:' 
-                                    . round(($userInfo->bonus + $tmp - $joiners[$i]['choushui'] - $joiners[$i]['bonus']) / 100, 2);
+                                    . ' 输' . abs($tmp / 100);
+                        $strs[] = '上局:' . floor($userInfo->jifen / 100) . ' 本局:' 
+                                    . floor(($userInfo->jifen + $tmp - $joiners[$i]['choushui'] - $joiners[$i]['bonus']) / 100);
                         
-                        $userInfo->bonus = $userInfo->bonus + $tmp - $joiners[$i]['choushui'] - $joiners[$i]['bonus'];
+                        $userInfo->jifen = $userInfo->jifen + $tmp - $joiners[$i]['choushui'] - $joiners[$i]['bonus'];
                         $userInfo->save();
                     }
                 }
@@ -1022,21 +1065,25 @@ class NiuniuService {
                         . ',' . $bankerPai['banker'] . '倍[' . $bankerPai['name'] . ']';  
             $strs[] = '抢包时间:' . date('Y-m-d H:i:s', $bankerBonus['timestamp']);
             $strs[] = '庄输平赢:吃' . $chi . ' 赔' . $pei . ' 平' . $ping . ' 喝' . $he;
-            $strs[] = '本局红包:' . round($game['amount'] / 100, 2);
-            $strs[] = '本局服务费:' . round($serverFee / 100, 2);
-            $strs[] = '上庄积分:' . round($game['startJifen'] / 100, 2);
-            $strs[] = '本局盈亏:' . round($bankerCounter / 100, 2);
-            $strs[] = '庄总积分:' . round($game['jifen'] / 100, 2);
-            $strs[] = '庄剩积分:' . round(($game['jifen'] + $bankerInfo->bonus) / 100, 2);
+            $strs[] = '本局红包:' . ($game['amount'] / 100);
+            $strs[] = '本局服务费:' . ($serverFee / 100);
+            $strs[] = '上庄积分:' . ($game['startJifen'] / 100);
+            $strs[] = '本局盈亏:' . floor($bankerCounter / 100);
+            $strs[] = '庄总积分:' . floor($game['jifen'] / 100);
+            $strs[] = '庄剩积分:' . floor(($game['jifen'] + $bankerInfo->jifen) / 100);
             $strs[] = '庄家走势:' . implode('->', $game['bankerResult']);
             
             // 写游戏信息
             $game['bonusId'] = -1;
+            // 庄家走势最多展示20条
+            if (count($game['bankerResult']) > 20) {
+                $game['bankerResult'] = array_slice($game['bankerResult'], 1);
+            }
             Cache::put(self::GAME_NAME . $roomId, json_encode($game), self::CACHE_TIME);
             // 写群主信息
             $groupOwner = Redis::get('groupOwner:' . $roomId); // 取群主
             $groupOwnerModel = UserModel::select('*')->where('username', $groupOwner)->first();
-            $groupOwnerModel->bonus += intval($serverFee + $bankerChoushui + array_sum(array_column($joiners, 'choushui')));
+            $groupOwnerModel->jifen += intval($serverFee + $bankerChoushui + array_sum(array_column($joiners, 'choushui')));
             $groupOwnerModel->save();
             // 游戏信息写回数据库
             $niuniuModel = NiuniuModel::select('*')->where('id', $game['id'])->first();
@@ -1538,14 +1585,16 @@ class NiuniuService {
      */
     public static function bang($roomId) {
         // 获取群组成员
-        $data = UserModel::select('nickname', 'bonus')->where([['bonus', '>', 0]])->orderBy('bonus', 'desc')->limit(1000)->get()->toArray();
+        $data = UserModel::select('nickname', 'jifen')
+                    ->where([['jifen', '>', 0]])
+                    ->orderBy('jifen', 'desc')->limit(500)->get()->toArray();
         $strs = [];
         $strs[] = '====🎩土豪排行榜🎩====';
         $strs[] = '人数:👤' . count($data);
-        $strs[] = '总积分:💰' . round(array_sum(array_column($data, 'bonus')) / 100, 2);
+        $strs[] = '总积分:💰' . floor(array_sum(array_column($data, 'jifen')) / 100);
         $strs[] = '------------------------------------';
         for ($i=0; $i<count($data); $i++) {
-            $strs[] = ($i + 1) . '[' . $data[$i]['nickname'] . ']积分:' . round($data[$i]['bonus'] / 100, 2);
+            $strs[] = ($i + 1) . '[' . $data[$i]['nickname'] . ']积分:' . floor($data[$i]['jifen'] / 100);
         }
         return implode('<br/>', $strs);
     }
@@ -1585,6 +1634,8 @@ class NiuniuService {
             $niuniuModel = NiuniuModel::select('*')->where('roomId', $roomId)->where('status', 0)->first();
             $niuniuModel->status = -1; // -1表示重推结束
             $niuniuModel->save();
+            $game['bonusId'] = -2;
+            Cache::put(self::GAME_NAME . $roomId, json_encode($game), self::CACHE_TIME);
             return 'ok';
         }      
         // 红包发送后不可以重推
@@ -1618,6 +1669,7 @@ class NiuniuService {
             throw new Exception("Error Input");
         }
         $data[0]['timestamp'] = date('Y-m-d H:i:s', $data[0]['timestamp']);
+        $data[0]['bonus'] = UserService::getBonusResult($data[0]['bonusId']);
         return $data[0];
     }
 

@@ -120,7 +120,6 @@ function goGame(room) {
             roomId: room.roomId
         },
         success: function(e) {
-            localStorage.setItem(room.roomId, JSON.stringify(e.data));
             if (room.rules) {
                 var index = wcPop({
                     title: '规则说明',

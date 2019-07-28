@@ -354,7 +354,7 @@
 var userInfo = {!! json_encode($userInfo) !!};
 var api = {
     pageParam: {
-        roomInfo: JSON.parse(localStorage.getItem('{{$conversationId}}')),
+        roomInfo: {!! json_encode($roomInfo) !!},
         params: {
             conversationId: '{{$conversationId}}',
             chatType: 'chatRoom',
