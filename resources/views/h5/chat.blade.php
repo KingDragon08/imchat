@@ -71,7 +71,7 @@
                             <!-- 别人-->
                             <li class="others" v-if="message.from != userInfo.username">
                                 <a class="avatar" href="javascript:;">
-                                    <img :src="'/common/avatar/' + message.from" />
+                                    <img :src="'http://via.placeholder.com/200/2f3130/f2f2f2?text=' + message.from" />
                                 </a>
                                 <div class="content">
                                     <p class="author">[[message.from]]</p>
@@ -119,7 +119,7 @@
                                     </div>
                                 </div>
                                 <a class="avatar" href="javascript:;">
-                                    <img :src="'/common/avatar/' + message.from" />
+                                    <img :src="'http://via.placeholder.com/200/2f3130/f2f2f2?text=' + message.from" />
                                 </a>
                             </li>
                         </section>
