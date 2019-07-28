@@ -4,6 +4,7 @@ use App\Models\UserModel;
 use App\Models\ChatRoomsModel;
 use App\Models\BonusModel;
 use App\Models\NiuniuModel;
+use App\Models\GroupsModel;
 
 use App\Services\UserService;
 use App\Services\EaseService;
@@ -1605,7 +1606,8 @@ class NiuniuService {
      */
     public static function list() {
         $groups = ChatRoomsModel::select('roomId', 'avatar')->where('type', 'niuniu')->get()->toArray();
-        $data = EaseService::getGroupsInfo(array_column($groups, 'roomId'));
+        // $groups = GroupsModel::select('groupId', 'avatar')->where('type', 'niuniu')->get()->toArray();
+        $data = EaseService::getRoomsInfo(array_column($groups, 'roomId'));
         $data = array_column($data, 'name', 'id');
         for ($i=0; $i<count($groups); $i++) {
             $groups[$i]['nickname'] = $data[$groups[$i]['roomId']];
