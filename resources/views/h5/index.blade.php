@@ -115,7 +115,7 @@
                                             </div>
                                             <div style="flex: 3;">
                                                 <p>积分</p>
-                                                <p>{{$userInfo['jifen']}}</p>
+                                                <p>{{round($userInfo['jifen'] * 1.0 / 100, 2)}}</p>
                                             </div>
                                         </div>
                                         <div class="right">
