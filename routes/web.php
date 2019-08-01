@@ -20,6 +20,14 @@ Route::group(['prefix' => 'user', 'namespace' => 'User'], function () {
     Route::any('register', 'UserController@register');
 });
 
+Route::group(['prefix' => 'user', 'namespace' => 'User', 'middleware' => 'token'], function () {
+    // 开放给算账网的接口
+    Route::any('register4B', 'UserController@register4B');
+    Route::any('userList4B', 'UserController@userList4B');
+    Route::any('setJifen4B', 'UserController@setJifen4B');
+    Route::any('setBonus4B', 'UserController@setBonus4B');
+});
+
 Route::group(['middleware' => 'auth'], function () {
     Route::group(['prefix' => 'ease', 'namespace' => 'Ease'], function () {
         Route::any('friends', 'EaseController@friends');

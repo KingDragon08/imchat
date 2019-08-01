@@ -61,6 +61,7 @@ class UserService {
         ]);
         $data['token'] = $token;
         $data['timestamp'] = time();
+        $data['easename'] = env('APP_NAME') . $username;
         return $data;
     }
 
@@ -452,7 +453,7 @@ class UserService {
     }
 
     /**
-     * 更改用户信息
+     * 更改用户信息-通过id
      * @param  int    $id    [description]
      * @param  string $key   [description]
      * @param  string $value [description]
@@ -460,6 +461,19 @@ class UserService {
      */
     public static function changeUserInfo(int $id, string $key, string $value) {
         $userModel = UserModel::select('*')->where('id', $id)->first();
+        $userModel->$key = $value;
+        $userModel->save();
+    }
+
+    /**
+     * 更改用户信息-通过username
+     * @param  int    $id    [description]
+     * @param  string $key   [description]
+     * @param  string $value [description]
+     * @return [type]        [description]
+     */
+    public static function changeUserInfoByName($username, $key, $value) {
+        $userModel = UserModel::select('*')->where('username', $username)->first();
         $userModel->$key = $value;
         $userModel->save();
     }
@@ -501,6 +515,24 @@ class UserService {
         $data['timestamp'] = time();
         return $data;
     }
+
+    /**
+     * 删除用户
+     * @param  [type] $username [description]
+     * @return [type]           [description]
+     */
+    public static function delete($username) {
+        $userModel = UserModel::select('*')->where('id', $id)->first();
+        if (isset($userModel->id)) {
+            $userModel->delete();
+        }
+    }
+
+    public static function getList($page, $size) {
+        return UserModel::select('*')->orderBy('id', 'desc')->skip(($page - 1) * $size)->take($size)->get()->toArray();
+    }
+
+
 
 
 

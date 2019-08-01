@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Validator;
 use Exception;
 use App\Services\UserService;
+use App\Services\EaseService;
 
 class UserController extends Controller
 {
@@ -47,7 +48,7 @@ class UserController extends Controller
     }
 
     /**
-     * 登录
+     * 注册
      * @param  Request $request [description]
      * @return [type]           [description]
      */
@@ -226,7 +227,7 @@ class UserController extends Controller
         }
     }
 
-
+    // 模糊搜索用户
     public function search(Request $request) {
         $validator = Validator::make($request->all(), [
             'username' => 'required|string|exists:user,username'
@@ -244,6 +245,7 @@ class UserController extends Controller
         }
     }
 
+    // 更新头像
     public function changeAvatar(Request $request) {
         $validator = Validator::make($request->all(), [
             'path' => 'required|string|min:6',
@@ -263,6 +265,7 @@ class UserController extends Controller
 
     }
 
+    // 更新用户信息
     public function changeUserInfo(Request $request) {
         $validator = Validator::make($request->all(), [
             'key' => 'required|string|min:1',
@@ -286,6 +289,7 @@ class UserController extends Controller
         }         
     }
 
+    // 更改密码
     public function changePwd (Request $request) {
         $validator = Validator::make($request->all(), [
             'pwd' => 'required|string|min:6',
@@ -302,9 +306,80 @@ class UserController extends Controller
         } catch (Exception $e) {
             return response()->json(['status' => 1, 'msg' => $e->getMessage()]);
         } 
-
-
     }
+
+    // 开放给第三方的注册接口,自动完成环信注册
+    public function register4B(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'username' => 'string|required|min:6',
+            'password' => 'string|required|min:6'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['status' => 1, 'msg' => '参数校验失败']);
+        }
+
+        try {
+            UserService::register($request->username, $request->password);
+            EaseService::register($request->username);
+            return response()->json(['status' => 0, 'msg' => '注册成功', 'data' => 'ok']);
+        } catch (Exception $e) {
+            // 失败时删除用户信息
+            UserService::delete($request->username);
+            return response()->json(['status' => 1, 'msg' => $e->getMessage()]);
+        }
+    }
+
+    // 开放给第三方的用户列表接口
+    public function userList4B(Request $request) {
+        $page = $request->input('page', 1);
+        $size = $request->input('size', 10);
+        try {
+            $data = UserService::getList($page, $size);
+            return response()->json(['status' => 0, 'msg' => 'ok', 'data' => $data]);    
+        } catch (Exception $e) {
+            return response()->json(['status' => 1, 'msg' => $e->getMessage()]);
+        }
+    }
+
+    // 开放给第三方的更改积分接口
+    public function setJifen4B(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'username' => 'required|string|exists:user,username',
+            'jifen' => 'int|required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['status' => 1, 'msg' => '参数校验失败']);
+        }
+
+        try {
+            UserService::changeUserInfoByName($request->username, 'jifen', $request->jifen);
+            return response()->json(['status' => 0, 'msg' => 'ok', 'data' => 'ok']);
+        } catch (Exception $e) {
+            return response()->json(['status' => 1, 'msg' => $e->getMessage()]);
+        }
+    }
+
+    // 开放给第三方的更改红包接口
+    public function setBonus4B(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'username' => 'required|string|exists:user,username',
+            'bonus' => 'int|required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['status' => 1, 'msg' => '参数校验失败']);
+        }
+
+        try {
+            UserService::changeUserInfoByName($request->username, 'bonus', $request->bonus);
+            return response()->json(['status' => 0, 'msg' => 'ok', 'data' => 'ok']);
+        } catch (Exception $e) {
+            return response()->json(['status' => 1, 'msg' => $e->getMessage()]);
+        }
+    }
+
 
 
 

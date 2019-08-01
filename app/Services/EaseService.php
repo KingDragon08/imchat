@@ -478,6 +478,29 @@ class EaseService {
         return $ret;
     }
 
+    /**
+     * 注册新用户
+     * @param  [type] $username [description]
+     * @return [type]           [description]
+     */
+    public static function register($username) {
+        $token = self::getEaseToken();
+        $url = env('EASE_HOST') . 'users';
+        $client = new HttpClient();
+        $headers = [
+            'headers' => [
+                'Accept' => 'application/json',
+                'Authorization' => 'Bearer ' . $token
+            ],
+            'json' => [
+                'username' => $username,
+                'password' => '123456',
+                'nickname' => $username
+            ]
+        ];
+        $response = $client->request('POST', $url, $headers);
+    }
+
 
 
 }

@@ -97,7 +97,7 @@ class CommonController extends Controller {
         $opts= [
             "http" => [
                 "method"=>"GET",
-                "timeout"=>3
+                "timeout"=>1
             ],
         ];
         $context = stream_context_create($opts);
