@@ -190,7 +190,9 @@ class UserController extends Controller
 
     // 获取用户头像
     public function getAvatar(Request $request) {
-        $validator = Validator::make($request->all(), [
+	$tmp = explode('-', $request->username);
+	$username = $tmp[count($tmp) - 1];
+        $validator = Validator::make(['username' => $username], [
             'username' => 'required|string|exists:user,username'
         ]);
 
@@ -199,9 +201,9 @@ class UserController extends Controller
         }
 
         try {
-            $data = UserService::getAvatar($request->username);
+            $data = UserService::getAvatar($username);
             return response()->json(['status' => 0, 'msg' => 'ok', 'data' => $data]);
-        } catch (Exception $e) {
+        } catch (Exception $e) {dd($e);
             return response()->json(['status' => 1, 'msg' => $e->getMessage()]);
         }
     }
