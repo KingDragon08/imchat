@@ -524,7 +524,9 @@
 </body>
 <script type="text/javascript" src="../../js/vue.min.js"></script>
 <script type="text/javascript" src="../../js/jquery-1.9.1.min.js"></script>
+<script src="../../js/wcPop/wcPop.js"></script>
 <script type="text/javascript" src="../../js/util.js"></script>
+
 <script type="text/javascript">
     let vue = '';
 
