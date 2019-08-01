@@ -221,7 +221,7 @@ class NiuniuService {
         }
 
         if ($type == 'normal') {
-            if ($bet * 100 > $userInfo->bonus * $config['maxZhuRate']) {
+            if ($bet * 100 > $userInfo->jifen * $config['maxZhuRate']) {
                 throw new Exception('下注不得超过余额的：' . ($config['maxZhuRate'] * 100) . '%');
             }
             if ($bet < $config['minZhu'] && $bet != 0) {
@@ -238,7 +238,7 @@ class NiuniuService {
             if (!$config['showHand']) {
                 throw new Exception('未开启梭哈下注');
             }
-            if ($bet * 100 > $userInfo->bonus * $config['maxShowHandRate']) {
+            if ($bet * 100 > $userInfo->jifen * $config['maxShowHandRate']) {
                 throw new Exception('下注不得超过余额的：' . $config['maxShowHandRate'] . '%');
             }
             if ($bet < $config['minShowHand'] && $bet != 0) {
