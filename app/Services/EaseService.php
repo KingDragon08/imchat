@@ -493,7 +493,7 @@ class EaseService {
                 'Authorization' => 'Bearer ' . $token
             ],
             'json' => [
-                'username' => $username,
+                'username' => env('APP_NAME') . $username,
                 'password' => '123456',
                 'nickname' => $username
             ]
