@@ -64,10 +64,19 @@
             height: 8px;
             background: #f2f2f2;
         }
+        #header {background: #2f3130; height: 3rem; line-height: 3rem; border-bottom: 1px solid #ffba00;}
+        #header .aui-btn {height: 3rem; line-height: 3rem;}
     </style>
 </head>
 
 <body>
+    <header class="aui-bar aui-bar-nav" id="header">
+        <a class="aui-pull-left aui-btn" onclick="javascript: history.go(-1);">
+            <span class="aui-iconfont aui-icon-left"></span>
+        </a>
+        <div class="aui-title" id="title">玩法设置</div>
+        <div class="aui-pull-right aui-btn" tapmode="" onclick="config()">设置</div>
+    </header>
     <div id="vue" class="aui-content aui-margin-b-15" v-cloak>
         <div class="container" style="">
             <div class="l1">
