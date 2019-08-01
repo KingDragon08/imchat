@@ -431,7 +431,9 @@ class UserService {
                                     'bonus', 'created_at', 'avatar', 'pyqImg', 'sign',
                                     'agent', 'phone', 'email'])
                 ->where('username', $username)->get()->toArray();
-        return $data[0];
+        $data = $data[0];
+        $data['easename'] = env('APP_NAME') . $data['username'];
+        return $data;
     }
 
     /**
@@ -511,6 +513,7 @@ class UserService {
             throw new Exception("账户名不存在或密码错误");
         }
         $data = $data[0];
+        $data['easename'] = env('APP_NAME') . $data['username'];
         $data['token'] = $token;
         $data['timestamp'] = time();
         return $data;

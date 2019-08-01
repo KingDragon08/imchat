@@ -369,7 +369,7 @@ $(function () {
     // 登录
     options = {
         apiUrl: WebIM.config.apiURL,
-        user: userInfo.username,
+        user: userInfo.easename,
         pwd: '123456',
         appKey: WebIM.config.appkey
     };
