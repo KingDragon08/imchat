@@ -171,7 +171,8 @@
                 },
                 init: function() {
                     let that = this;
-                    that.avatar = '/common/avatar/' + that.message.from;
+                    // that.avatar = '/common/avatar/' + that.message.from;
+                    that.avatar = 'http://via.placeholder.com/200/2f3130/ffffff?text=' + that.message.from;
                     that.name = that.message.from;
                     that.getListData();
                 }
