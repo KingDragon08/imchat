@@ -358,7 +358,7 @@ class NiuniuService {
         $strs[] = '------------------------------------';
         $strs[] = '庄家名字:' . $bankerInfo['nickname'];
         $strs[] = '上庄积分:' . intval($gameInfo['startJifen'] / 100);
-        $strs[] = '玩家人数:' . ($normalBetCounter + $showHandUserCounter) . ' 总分:' . ($normalBetCounter + $showHandBetCounter);
+        $strs[] = '玩家人数:' . count($userIds) . ' 总分:' . ($normalBetCounter + $showHandBetCounter);
         $strs[] = '梭哈总注:' . $showHandBetCounter . ' 总注:' . $normalBetCounter;
         $strs[] = '发包人数:' . $number . ' 应发:' . round($amount/100, 2);
         $strs[] = '------------------------------------';

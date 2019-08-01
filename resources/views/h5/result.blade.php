@@ -89,7 +89,8 @@
                 <li class="aui-list-item" v-for="item in joiner">
                     <div class="aui-media-list-item-inner">
                         <div class="aui-list-item-media">
-                            <img :src="item.avatar">
+                            <!-- <img :src="item.avatar"> -->
+                            <img :src="'http://via.placeholder.com/200/2f3130/ffffff?text=' + item.username">
                         </div>
                         <div class="aui-list-item-inner" style="border-bottom: 1px solid #f2f2f2;">
                             <div class="aui-list-item-text" style="height: 100%;">
