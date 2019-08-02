@@ -104,7 +104,7 @@ $(function() {
                                             style: 'background: #f3f3f3;'
                                         });
                                         setTimeout(function(){
-                                            ttt.refreshBonusResult(10);
+                                            ttt.refreshBonusResult(message.ext.id, message.to, 10);
                                         },100);
                                     }
                                 });
@@ -113,16 +113,16 @@ $(function() {
                     }
                 });
             },
-            refreshBonusResult: function (counter) {
+            refreshBonusResult: function (bonusId, roomId, counter) {
                 var that = this;
                 if (counter > 0) {
                     $.ajax({
                         url: '/game/niuniu/openBonus',
                         data: {
-                            bonusId: message.ext.id,
-                            roomId: message.to,
-                            id: ttt.userInfo.id,
-                            token: ttt.userInfo.token
+                            bonusId: bonusId,
+                            roomId: roomId,
+                            id: userInfo.id,
+                            token: userInfo.token
                         },
                         method: 'post',
                         success: function (data) {
@@ -144,12 +144,12 @@ $(function() {
                                                 '</label>' +
                                             '</a>' +
                                         '</li>';
-                                if (joiner[i]['id'] == ttt.userInfo.id) {
+                                if (joiner[i]['id'] == userInfo.id) {
                                     $('#wcim_hb_fullscreen #bonus_result_total').text((joiner[i]['amount'] / 100).toFixed(2));
                                 }
                             }
                             $('#wcim_hb_fullscreen #bonus_result_list').html(html);
-                            that.refreshBonusResult(counter - 1);
+                            that.refreshBonusResult(bonusId, roomId, counter - 1);
                         }
                     });
                 }
