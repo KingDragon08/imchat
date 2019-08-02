@@ -127,7 +127,6 @@ $(function() {
                         method: 'post',
                         success: function (data) {
                             var joiner = data.data.joiner;
-                            $('#wcim_hb_fullscreen #bonus_result_list').html('');
                             var html = '';
                             for (let i = 0; i < joiner.length; i++) {
                                 html += '<li>' +
