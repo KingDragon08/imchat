@@ -989,7 +989,7 @@ class NiuniuService {
                                     . $joiner['name'] . ',' . $joiner['rate']
                                     . ' ' . ($joiner['type'] == 'normal' ? '押' : '梭哈') . $joiner['bet']
                                     . ' 赢' . ($tmp / 100);
-                        $strs[] = '上局:' . floor($userInfo->jifen / 100) . ' 本局:' . floor(($userInfo->bonus + $tmp) / 100);
+                        $strs[] = '上局:' . floor($userInfo->jifen / 100) . ' 本局:' . floor(($userInfo->jifen + $tmp) / 100);
                         $userInfo->jifen += $tmp;
                         $userInfo->save();
                     }
