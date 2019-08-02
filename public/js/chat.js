@@ -25,6 +25,7 @@ $(function() {
                 message: '',  // 消息原始数据
             },
             zhuang: -1, // 庄的username
+            joiners: 0, // 参与者个人
         },
         mounted: function () {
             let that = this;
@@ -70,6 +71,7 @@ $(function() {
                                     method: 'post',
                                     success: function (data) {
                                         var joiner = data.data.joiner;
+                                        ttt.joiners = joiner.length;
                                         $('#bonus_result_list').html('');
                                         var html = '';
                                         for (let i = 0; i < joiner.length; i++) {
@@ -127,27 +129,29 @@ $(function() {
                         method: 'post',
                         success: function (data) {
                             var joiner = data.data.joiner;
-                            var html = '';
-                            for (let i = 0; i < joiner.length; i++) {
-                                html += '<li>' +
-                                            '<a class="wcim__material-cell flexbox flex-alignc" href="#">' +
-                                                '<span class="avator">' +
-                                                    '<img src="http://via.placeholder.com/200/2f3130/ffffff?text=' + joiner[i]['username'] + '">' +
-                                                '</span>' +
-                                                '<label class="flex1 flexbox flex-alignc">' +
-                                                    '<span class="flex1">' +
-                                                        '<em class="db fs-30">' + joiner[i]['username'] + '</em>' +
-                                                        '<em class="db fs-24 c-9ea0a3 rmt-5">' + util.transTimestamp(joiner[i]['timestamp'] * 1000) + '</em>' +
+                            if (joiner.length != that.joiners) {
+                                var html = '';
+                                for (let i = 0; i < joiner.length; i++) {
+                                    html += '<li>' +
+                                                '<a class="wcim__material-cell flexbox flex-alignc" href="#">' +
+                                                    '<span class="avator">' +
+                                                        '<img src="http://via.placeholder.com/200/2f3130/ffffff?text=' + joiner[i]['username'] + '">' +
                                                     '</span>' +
-                                                    '<em class="moneyNum">' + (joiner[i]['amount'] / 100).toFixed(2) + '元</em>' +
-                                                '</label>' +
-                                            '</a>' +
-                                        '</li>';
-                                if (joiner[i]['id'] == userInfo.id) {
-                                    $('#wcim_hb_fullscreen #bonus_result_total').text((joiner[i]['amount'] / 100).toFixed(2));
+                                                    '<label class="flex1 flexbox flex-alignc">' +
+                                                        '<span class="flex1">' +
+                                                            '<em class="db fs-30">' + joiner[i]['username'] + '</em>' +
+                                                            '<em class="db fs-24 c-9ea0a3 rmt-5">' + util.transTimestamp(joiner[i]['timestamp'] * 1000) + '</em>' +
+                                                        '</span>' +
+                                                        '<em class="moneyNum">' + (joiner[i]['amount'] / 100).toFixed(2) + '元</em>' +
+                                                    '</label>' +
+                                                '</a>' +
+                                            '</li>';
+                                    if (joiner[i]['id'] == userInfo.id) {
+                                        $('#wcim_hb_fullscreen #bonus_result_total').text((joiner[i]['amount'] / 100).toFixed(2));
+                                    }
                                 }
+                                $('#wcim_hb_fullscreen #bonus_result_list').html(html);    
                             }
-                            $('#wcim_hb_fullscreen #bonus_result_list').html(html);
                             setTimeout(function () {
                                 that.refreshBonusResult(bonusId, roomId, counter - 1);    
                             }, counter == 10 ? 100 : 500);
