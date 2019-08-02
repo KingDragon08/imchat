@@ -149,7 +149,9 @@ $(function() {
                                 }
                             }
                             $('#wcim_hb_fullscreen #bonus_result_list').html(html);
-                            that.refreshBonusResult(bonusId, roomId, counter - 1);
+                            setTimeout(function () {
+                                that.refreshBonusResult(bonusId, roomId, counter - 1);    
+                            }, counter == 10 ? 100 : 500);
                         }
                     });
                 }
