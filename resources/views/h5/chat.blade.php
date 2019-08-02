@@ -373,10 +373,10 @@
             <div class="wcim__popupTmpl tmpl-viewRedPacket">
                 <div class="publisher">
                     <i class="hbbg"></i>
-                    <img class="uimg" id="bonus_result_avatar" src="img/uimg/u__chat-img08.jpg" />
-                    <h2 class="user" id="bonus_result_name">大幂幂</h2>
+                    <img class="uimg" id="bonus_result_avatar" src="../img/uimg/u__chat-img08.jpg" />
+                    <h2 class="user" id="bonus_result_name">***</h2>
                     <h4 class="desc">恭喜发财，大吉大利</h4>
-                    <div class="total"><em id="bonus_result_total">6.66</em> 元</div>
+                    <div class="total"><em id="bonus_result_total">-</em>*元</div>
                 </div>
                 <ul class="wcim__similarPanel-cells clearfix bg-fff" id="bonus_result_list">
                     <li><a class="wcim__material-cell flexbox flex-alignc" href="#"><span class="avator"><img src="../img/uimg/u__chat-img07.jpg"></span><label class="flex1 flexbox flex-alignc"><span class="flex1"><em class="db fs-30">郑丽丽(Lili)</em><em class="db fs-24 c-9ea0a3 rmt-5">9月11日 08:32</em></span> <em class="moneyNum">0.76元</em></label></a></li>
