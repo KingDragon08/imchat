@@ -18,7 +18,7 @@
     <script src="../js/zepto.min.js"></script>
     <script src="../js/fontSize.js"></script>
     <script src="../js/swiper-3.4.1.min.js"></script>
-    <script src="../js/wcPop/wcPop.js"></script>
+    <script src="../js/wcPop1/wcPop.js"></script>
     <script src="../js/weui.min.js"></script>
     <script src="../js/vue.min.js"></script>
     <script src="../js/chat.js"></script>
@@ -46,9 +46,9 @@
             height: 16px; line-height: 16px; width: 220px;
             margin-left: -14px;
         }
-        .popui__panel-cnt {
+        /*.popui__panel-cnt {
             max-height: 500px; overflow: scroll;
-        }
+        }*/
     </style>
 </head>
 
@@ -153,7 +153,6 @@
                         </div>
                     </div>
                 </div>
-
 
                 <div class="bonus-bg" v-show="bonus.show">
                     <div class="bonus-ct">
@@ -350,6 +349,43 @@
         });
     </script>
     
+    <!-- 开红包效果 -->
+    <div class="wcim__popup-tmpl">
+        <div id="J__popupTmpl-getRedPacket" style="display:none;">
+            <div class="wcim__popupTmpl tmpl-getRedPacket">
+                <!-- <span class="wdt-popClose" onclick="wcPop.close();">
+                    <i class="iconfont icon-close c-dcdddd"></i>
+                </span> -->
+                <div class="wcim__getRedPacket-panel">
+                    <img class="avatar" id="bonus_avatar" src="" />
+                    <h2 class="uname" id="bonus_name">大幂幂(Mimi)</h2>
+                    <h4 class="hbtype">牛牛红包</h4>
+                    <div class="desc clamp2">恭喜发财，大吉大利</div>
+                    <button class="btn-open J__btnGetRedPacket">開</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 红包结果 -->
+    <div class="wcim__popup-tmpl">
+        <div id="J__popupTmpl-viewRedPacket" style="display:none;">
+            <div class="wcim__popupTmpl tmpl-viewRedPacket">
+                <div class="publisher">
+                    <i class="hbbg"></i>
+                    <img class="uimg" id="bonus_result_avatar" src="img/uimg/u__chat-img08.jpg" />
+                    <h2 class="user" id="bonus_result_name">大幂幂</h2>
+                    <h4 class="desc">恭喜发财，大吉大利</h4>
+                    <div class="total"><em id="bonus_result_total">6.66</em> 元</div>
+                </div>
+                <ul class="wcim__similarPanel-cells clearfix bg-fff" id="bonus_result_list">
+                    <li><a class="wcim__material-cell flexbox flex-alignc" href="#"><span class="avator"><img src="../img/uimg/u__chat-img07.jpg"></span><label class="flex1 flexbox flex-alignc"><span class="flex1"><em class="db fs-30">郑丽丽(Lili)</em><em class="db fs-24 c-9ea0a3 rmt-5">9月11日 08:32</em></span> <em class="moneyNum">0.76元</em></label></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
 </body>
 <script src="../js/webim/my.js"></script>
 <script type="text/javascript">

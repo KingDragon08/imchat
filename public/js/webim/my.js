@@ -27,7 +27,7 @@ function initChat() {
             conn.fetchHistoryMessages({
                 queue: api.pageParam.params.conversationId,
                 isGroup: true,
-                count: 50,
+                count: 20,
                 success: function (messages) {
                     console.log(messages);
                     vue.$data.messages = messages;

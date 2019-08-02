@@ -47,6 +47,7 @@
     }
     .popui__panel-cnt {
         text-align: left !important;
+        max-height: 50vh; overflow: scroll;
     }
     </style>
 </head>

@@ -37,12 +37,78 @@ $(function() {
         methods: {
             openBonus: function (message, index) {
                 console.log(message);
-                this.bonus.show = true;
+                // this.bonus.show = true;
                 this.bonus.name = message.from;
                 this.bonus.avatar = '/common/avatar/' + message.from;
                 this.bonus.msg = '恭喜发财,大吉大利';
                 this.bonus.message = message;
                 this.bonus.index = index;
+                var ttt = this;
+                $('#bonus_name').text(message.from);
+                $('#bonus_result_name').text(message.from);
+                $('#bonus_avatar').attr('src', 'http://via.placeholder.com/200/ffa93b/ffffff?text=' + message.from);
+                $('#bonus_result_avatar').attr('src', 'http://via.placeholder.com/200/ffa93b/ffffff?text=' + message.from);
+                var getHbIdx = wcPop({
+                    id: 'wdtPopGetHb',
+                    skin: 'ios',
+                    content: $("#J__popupTmpl-getRedPacket").html(),
+                    xclose: true,
+                    style: 'background-color: #f3f3f3; width: 300px;',
+                    show: function() {
+                        $("body").on("click", ".J__btnGetRedPacket", function() {
+                            var that = $(this);
+                            that.addClass("active");
+                            setTimeout(function (){
+                                $.ajax({
+                                    url: '/game/niuniu/openBonus',
+                                    data: {
+                                        bonusId: message.ext.id,
+                                        roomId: message.to,
+                                        id: ttt.userInfo.id,
+                                        token: ttt.userInfo.token
+                                    },
+                                    method: 'post',
+                                    success: function (data) {
+                                        var joiner = data.data.joiner;
+                                        $('#bonus_result_list').html('');
+                                        var html = '';
+                                        for (let i = 0; i < joiner.length; i++) {
+                                            html += '<li>' +
+                                                        '<a class="wcim__material-cell flexbox flex-alignc" href="#">' +
+                                                            '<span class="avator">' +
+                                                                '<img src="http://via.placeholder.com/200/2f3130/ffffff?text=' + joiner[i]['username'] + '">' +
+                                                            '</span>' +
+                                                            '<label class="flex1 flexbox flex-alignc">' +
+                                                                '<span class="flex1">' +
+                                                                    '<em class="db fs-30">' + joiner[i]['username'] + '</em>' +
+                                                                    '<em class="db fs-24 c-9ea0a3 rmt-5">' + util.transTimestamp(joiner[i]['timestamp'] * 1000) + '</em>' +
+                                                                '</span>' +
+                                                                '<em class="moneyNum">' + (joiner[i]['amount'] / 100).toFixed(2) + '元</em>' +
+                                                            '</label>' +
+                                                        '</a>' +
+                                                    '</li>';
+                                            if (joiner[i]['id'] == ttt.userInfo.id) {
+                                                $('#bonus_result_total').text((joiner[i]['amount'] / 100).toFixed(2));
+                                            }
+                                        }
+                                        $('#bonus_result_list').html(html);
+                                        that.removeClass("active");
+                                        wcPop.close(getHbIdx);
+                                        var viewHbIdx = wcPop({
+                                            id: 'wcim_hb_fullscreen',
+                                            title: '红包详情',
+                                            skin: 'fullscreen',
+                                            content: $("#J__popupTmpl-viewRedPacket").html(),
+                                            position: 'top',
+                                            xclose: true,
+                                            style: 'background: #f3f3f3;'
+                                        });
+                                    }
+                                });
+                            }, 500);
+                        });
+                    }
+                });
             },
             closeBonus: function () {
                 this.bonus.show = false;
