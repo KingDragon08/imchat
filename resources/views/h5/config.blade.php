@@ -800,7 +800,7 @@
 
     function config() {
         vue.setConfig(function () {
-            history.go(-1);
+            // history.go(-1);
         });
     }
 

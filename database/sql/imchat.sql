@@ -135,3 +135,18 @@ CREATE TABLE `user` (
   `email` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb4;
+
+
+CREATE TABLE `imchat`.`admin` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `username` VARCHAR(45) NOT NULL,
+  `password` VARCHAR(200) NOT NULL,
+  `created_time` VARCHAR(45) NULL,
+  PRIMARY KEY (`id`));
+
+ALTER TABLE `imchat`.`admin` 
+ADD COLUMN `role` VARCHAR(45) NOT NULL DEFAULT 'agent' COMMENT 'Agent or admin' AFTER `created_time`;
+
+INSERT INTO `imchat`.`admin` (`username`, `password`, `created_time`, `role`) VALUES ('admin', 'e10adc3949ba59abbe56e057f20f883e', '1562340091', 'admin');
+
+

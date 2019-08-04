@@ -34,7 +34,7 @@ class UserController extends Controller
     }
 
     /**
-     * 登录
+     * 登出
      * @param  Request $request [description]
      * @return [type]           [description]
      */

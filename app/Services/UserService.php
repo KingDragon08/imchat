@@ -531,8 +531,24 @@ class UserService {
         }
     }
 
-    public static function getList($page, $size) {
-        return UserModel::select('*')->orderBy('id', 'desc')->skip(($page - 1) * $size)->take($size)->get()->toArray();
+    /**
+     * 获取用户列表
+     * @param  [type] $page [description]
+     * @param  [type] $size [description]
+     * @return [type]       [description]
+     */
+    public static function getList($page, $size, $whereArr = []) {
+        $data = UserModel::select('*');
+        if (!empty($whereArr)) {
+            $data = $data->where($whereArr);
+        }
+        $data = $data->orderBy('id', 'desc');
+        $total = $data->count();
+        $data = $data->skip(($page - 1) * $size)->take($size)->get()->toArray();
+        return [
+            'data' => $data,
+            'total' => $total
+        ];
     }
 
 

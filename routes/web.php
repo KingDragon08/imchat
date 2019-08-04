@@ -135,6 +135,24 @@ Route::group(['middleware' => 'h5Auth', 'prefix' => 'h5'], function () {
 });
 
 
+// 管理员
+Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function () {
+    Route::get('login', function () { return view('admin/login'); });
+    Route::post('login', 'AdminController@login');
+});
+
+Route::group(['middleware' => 'adminAuth', 'prefix' => 'admin', 'namespace' => 'Admin'], function () {
+    Route::get('/', 'AdminController@user');
+    Route::get('/user', 'AdminController@user');
+    Route::get('/room', 'AdminController@room');
+    Route::get('/game', 'AdminController@game');
+    Route::get('/admin', 'AdminController@admin');
+    Route::get('/agent', 'AdminController@agent');
+    Route::get('/bet', 'AdminController@bet');
+
+    Route::get('/userList', 'AdminController@userList');
+
+});
 
 
 
