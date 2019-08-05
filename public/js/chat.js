@@ -187,6 +187,8 @@ $(function() {
 
             bet: function (type, number) {
                 let that = this;
+                // 下注时自动收起软键盘
+                document.activeElement.blur();
                 $.ajax({
                     url: '/game/niuniu/bet',
                     method: 'post',

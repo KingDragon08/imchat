@@ -71,10 +71,10 @@
                             <!-- 别人-->
                             <li class="others" v-if="message.from != userInfo.username">
                                 <a class="avatar" href="javascript:;" :name="message.from">
-                                    <div class="div_avatar">[[message.from[0]]]</div>
+                                    <div class="div_avatar" v-text="message.from[0]"></div>
                                 </a>
                                 <div class="content">
-                                    <p class="author">[[message.from]]</p>
+                                    <p class="author" v-text="message.from"></p>
                                     <!-- 纯文本 -->
                                     <div class="msg" v-html="message.data" v-if="!message.ext.hasOwnProperty('type')"></div>
                                     <!-- 游戏表情 -->
@@ -98,7 +98,7 @@
                             <!--自己-->
                             <li class="me" v-if="message.from == userInfo.username">
                                 <div class="content">
-                                    <p class="author">[[message.from]]</p>
+                                    <p class="author" v-text="message.from"></p>
                                     <!-- 纯文本 -->
                                     <div class="msg" v-html="message.data" v-if="!message.ext.hasOwnProperty('type')"></div>
                                     <!-- 游戏表情 -->
@@ -119,7 +119,7 @@
                                     </div>
                                 </div>
                                 <a class="avatar" href="javascript:;" :name="message.from">
-                                    <!-- <div class="div_avatar">[[message.from[0]]]</div> -->
+                                    <div class="div_avatar" v-text="message.from[0]"></div>
                                 </a>
                             </li>
                         </section>
@@ -221,8 +221,6 @@
         
         /** __自定函数 */
         $(function(){
-            
-
             // ...点击聊天面板区域
             $(document).on("click", ".wc__chatMsg-panel", function(e){
                 var _tapMenu = $(".wc__chatTapMenu");
@@ -310,9 +308,12 @@
                 sendText(html);
                 wchat_ToBottom();
                 // 清空聊天框并获取焦点（处理输入法和表情 - 聚焦）
-                if(!$(".wc__choose-panel").is(":hidden")){$editor.html("");
-                }else{$editor.html("").focus().trigger("click");
-                }wchat_ToBottom();
+                if(!$(".wc__choose-panel").is(":hidden")){
+                    $editor.html("");
+                }else{
+                    $editor.html("").focus().trigger("click");
+                }
+                wchat_ToBottom();
             });
             
             // ...长按弹出菜单
@@ -342,7 +343,9 @@
             });
             // ...长按@
             $("#J__chatMsgList").on("longTap", "li .avatar", function(e){
-                console.log($(this));
+                var that = $(this);
+                var name = that.attr('name');
+                $editor.text('@' + name);
             });
             // ...销毁长按弹窗
             $(".wc__chatMsg-panel").on("scroll", function(){
