@@ -45,7 +45,7 @@
         position: fixed; right:0; bottom:0;
         min-width:100%; min-height:100%; width: auto;height:
         auto;z-index:-100; background-size: cover;
-        background-image: url(../img/game/login_video.gif);
+        background-image: url('https://imchat.bj.bcebos.com/common%2Flogin_video.gif');
     }
     .aui-list-item:active {
         background: none !important;
