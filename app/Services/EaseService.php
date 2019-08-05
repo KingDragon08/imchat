@@ -439,6 +439,26 @@ class EaseService {
     }
 
     /**
+     * 获取聊天室管理员
+     * @param  [type] $roomId [description]
+     * @return [type]         [description]
+     */
+    public static function getRoomAdmin($roomId) {
+        $token = self::getEaseToken();
+        $url = env('EASE_HOST') . 'chatrooms/' . $roomId . '/admin';
+        $client = new HttpClient();
+        $headers = [
+            'headers' => [
+                'Accept' => 'application/json',
+                'Authorization' => 'Bearer ' . $token
+            ]
+        ];
+        $response = $client->request('GET', $url, $headers);
+        $data = json_decode($response->getBody(), true)['data'];
+        return $data;
+    }
+
+    /**
      * 获取聊天室成员信息
      * @param  [type] $roomId [description]
      * @return [type]         [description]
@@ -449,14 +469,8 @@ class EaseService {
             throw new Exception("error room");
         }
         $data = $data[0];
-        $members = [];
-        foreach ($data['affiliations'] as $item) {
-            if (isset($item['member'])) {
-                $members[] = $item['member'];
-            } else {
-                $members[] = $item['owner'];
-            }
-        }
+        $members = array_values($data['affiliations']);
+        $admin = self::getRoomAdmin($roomId);
         $ret = [
             'id' => $data['id'],
             'name' => $data['name'],
@@ -464,13 +478,16 @@ class EaseService {
             'maxusers' => $data['maxusers'],
             'owner' => $data['owner'],
             'members' => $members,
+            'admin' => $admin,
             'timestamp' => $data['created'],
             'avatar' => '',
         ];
         $owner = UserModel::select(['id', 'username', 'nickname', 'avatar'])->where('username', $ret['owner'])->get()->toArray()[0];
         $members = UserModel::select(['id', 'username', 'nickname', 'avatar'])->whereIn('username', $ret['members'])->get()->toArray();
+        $admin = UserModel::select(['id', 'username', 'nickname', 'avatar'])->whereIn('username', $ret['admin'])->get()->toArray();
         $ret['owner'] = $owner;
         $ret['members'] = $members;
+        $ret['admin'] = $admin;
         $tmp = ChatRoomsModel::select(['avatar', 'type', 'cfg'])->where('roomId', $roomId)->get()->toArray()[0];
         $ret['avatar'] = $tmp['avatar'];
         $ret['type'] = $tmp['type'];

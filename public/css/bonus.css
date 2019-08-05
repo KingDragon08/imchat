@@ -52,3 +52,8 @@
 .close i {
     font-size: 32px; color: #e8712a; font-weight: bold;
 }
+.div_avatar {
+    width: 0.8rem; height: 0.8rem; line-height: 0.8rem;
+    font-size: 0.6rem; color: #fff; overflow: hidden; text-overflow: ellipsis;
+    background: #2f3130;
+}

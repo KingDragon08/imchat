@@ -70,9 +70,8 @@
                         <section v-for="(message, index) in messages">
                             <!-- 别人-->
                             <li class="others" v-if="message.from != userInfo.username">
-                                <a class="avatar" href="javascript:;">
-                                    <!-- <img :src="'/common/avatar/' + message.from" /> -->
-                                    <img :src="'http://via.placeholder.com/200/2f3130/ffffff?text=' + message.from" />
+                                <a class="avatar" href="javascript:;" :name="message.from">
+                                    <div class="div_avatar">[[message.from[0]]]</div>
                                 </a>
                                 <div class="content">
                                     <p class="author">[[message.from]]</p>
@@ -91,7 +90,7 @@
                                     >
                                         <img src="../img/game/bonus1.png">
                                         <div>[[message.ext.ext]]</div>
-                                        <div class="bonus-footer">牛牛红包</div>
+                                        <div class="bonus-footer">imchat红包</div>
                                     </div>
                                     
                                 </div>
@@ -116,12 +115,11 @@
                                     >
                                         <img src="../img/game/bonus1.png">
                                         <div>[[message.ext.ext]]</div>
-                                        <div class="bonus-footer">牛牛红包</div>
+                                        <div class="bonus-footer">imchat红包</div>
                                     </div>
                                 </div>
-                                <a class="avatar" href="javascript:;">
-                                    <!-- <img :src="'/common/avatar/' + message.from" /> -->
-                                    <img :src="'http://via.placeholder.com/200/2f3130/ffffff?text=' + message.from" />
+                                <a class="avatar" href="javascript:;" :name="message.from">
+                                    <!-- <div class="div_avatar">[[message.from[0]]]</div> -->
                                 </a>
                             </li>
                         </section>
@@ -342,6 +340,10 @@
                     });
                 }
             });
+            // ...长按@
+            $("#J__chatMsgList").on("longTap", "li .avatar", function(e){
+                console.log($(this));
+            });
             // ...销毁长按弹窗
             $(".wc__chatMsg-panel").on("scroll", function(){
                 $(".wc__chatTapMenu").hide();$(this).find("li .msg").removeClass("taped");
@@ -359,7 +361,7 @@
                 <div class="wcim__getRedPacket-panel">
                     <img class="avatar" id="bonus_avatar" src="" />
                     <h2 class="uname" id="bonus_name">大幂幂(Mimi)</h2>
-                    <h4 class="hbtype">牛牛红包</h4>
+                    <h4 class="hbtype">imchat红包</h4>
                     <div class="desc clamp2">恭喜发财，大吉大利</div>
                     <button class="btn-open J__btnGetRedPacket">開</button>
                 </div>
@@ -411,7 +413,7 @@ $(function () {
         pwd: '123456',
         appKey: WebIM.config.appkey
     };
-    conn.open(options);
+    // conn.open(options);
 });
 
 

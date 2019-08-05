@@ -34,6 +34,17 @@ $(function() {
                 $('#btn-choose').show();
                 $('#swiper__tmpl-emotion00').show();
             }
+            let flag = false;
+            for (let i=0; i<that.roomInfo.admin.length; i++) {
+                if (that.roomInfo.admin[i]['username'] == that.userInfo.username) {
+                    flag = true;
+                    break;
+                }
+            }
+            // 管理员开放图片权限
+            if (flag) {
+                $('#swiper__tmpl-emotion00').show();
+            }
         },
         methods: {
             openBonus: function (message, index) {
@@ -131,6 +142,7 @@ $(function() {
                             var joiner = data.data.joiner;
                             if (joiner.length != that.joiners) {
                                 var html = '';
+                                $('#wcim_hb_fullscreen #bonus_result_list').html(html);
                                 for (let i = 0; i < joiner.length; i++) {
                                     html += '<li>' +
                                                 '<a class="wcim__material-cell flexbox flex-alignc" href="#">' +
@@ -396,13 +408,13 @@ var imSendBonus = function (bonusId, amount, number) {
             id: bonusId + '',
             amount: amount + '',
             number: number + '',
-            ext: '牛牛红包',
+            ext: 'imchat红包',
             type: 'bonus',
             niuniu: '1',
         },
         success: function () {
             console.log('send bonus success');
-            msg.body.data = '牛牛红包';
+            msg.body.data = 'imchat红包';
             msg.body.from = userInfo.username;
             vue.$data.messages.push(msg.body);
             setTimeout(function(){

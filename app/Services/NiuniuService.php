@@ -164,7 +164,7 @@ class NiuniuService {
             // 构造返回信息
             $strs = [];
             $strs[] = '本局庄家:' . $currentBankerModel->nickname;
-            $strs[] = '庄家积分:' . intval($cache['jifen'] / 100);
+            $strs[] = '庄家积分:' . intval($cache['startJifen'] / 100); // 展示上庄积分
             $strs[] = '最低下注:' . $config['minZhu'];
             // 最高下注
             if ($config['maxZhuType'] == 'banker') {
@@ -561,8 +561,8 @@ class NiuniuService {
         $noBonusIds = array_diff($joinersIds, $bonusJoinersIds); // 未抢包用户id集合
         // 红包未抢完
         if (!empty($noBonusIds)) {
-            // 未超时,不能结算
-            if ($timestamp - $game['timestamp'] < $config['overtime']) {
+            // 未超时,不能结算,富余5秒,防止争议
+            if ($timestamp - $game['timestamp'] < $config['overtime'] + 5) {
                 throw new Exception("红包未抢完且未超时,不能结算");
             }
         }
@@ -814,7 +814,7 @@ class NiuniuService {
                         $strs[] = '抢:' 
                                     . strval(number_format($result[$joiner['userId']]['amount'] / 100, 2)) 
                                     . '->' 
-                                    . $joiner['name'] . ',' . $joiner['rate']
+                                    . $joiner['name']// . ',' . $joiner['rate']
                                     . ' ' . ($joiner['type'] == 'normal' ? '押' : '梭哈') . $joiner['bet']
                                     . ' 赢' . ($tmp / 100);
                         $strs[] = '上局:' . floor($userInfo->jifen / 100) . ' 本局:' . floor(($userInfo->jifen + $tmp) / 100);
@@ -851,7 +851,7 @@ class NiuniuService {
                         $strs[] = '抢:' 
                                     . strval(number_format($result[$joiner['userId']]['amount'] / 100, 2)) 
                                     . '->' 
-                                    . $joiner['name'] . ',' . $joiner['rate']
+                                    . $joiner['name']// . ',' . $joiner['rate']
                                     . ' ' . ($joiner['type'] == 'normal' ? '押' : '梭哈') . $joiner['bet']
                                     . ' 赢' . ($tmp / 100);
                         $strs[] = '上局:' . floor($userInfo->jifen / 100) . ' 本局:' . floor(($userInfo->jifen + $tmp) / 100);
@@ -880,7 +880,7 @@ class NiuniuService {
                         $strs[] = '抢:' 
                                     . strval(number_format($result[$joiner['userId']]['amount'] / 100, 2)) 
                                     . '->' 
-                                    . $joiner['name'] . ',' . $joiner['rate']
+                                    . $joiner['name']// . ',' . $joiner['rate']
                                     . ' ' . ($joiner['type'] == 'normal' ? '押' : '梭哈') . $joiner['bet']
                                     . ' 喝水';
                         
@@ -904,7 +904,7 @@ class NiuniuService {
                         $strs[] = '抢:' 
                                     . strval(number_format($result[$joiner['userId']]['amount'] / 100, 2)) 
                                     . '->' 
-                                    . $joiner['name'] . ',' . $joiner['rate']
+                                    . $joiner['name']// . ',' . $joiner['rate']
                                     . ' ' . ($joiner['type'] == 'normal' ? '押' : '梭哈') . $joiner['bet'];
 
                         $strs[] = '上局:' . floor($userInfo->jifen / 100) . ' 本局:' . floor(($userInfo->jifen - $joiners[$i]['bonus']) / 100);
@@ -941,7 +941,7 @@ class NiuniuService {
                         $strs[] = '抢:' 
                                     . strval(number_format($result[$joiner['userId']]['amount'] / 100, 2)) 
                                     . '->' 
-                                    . $joiner['name'] . ',' . $joiner['rate']
+                                    . $joiner['name']// . ',' . $joiner['rate']
                                     . ' ' . ($joiner['type'] == 'normal' ? '押' : '梭哈') . $joiner['bet']
                                     . ' 输' . abs($tmp / 100);
                         $strs[] = '上局:' . floor($userInfo->jifen / 100) . ' 本局:' 
@@ -986,7 +986,7 @@ class NiuniuService {
                         $strs[] = '抢:' 
                                     . strval(number_format($result[$joiner['userId']]['amount'] / 100, 2)) 
                                     . '->' 
-                                    . $joiner['name'] . ',' . $joiner['rate']
+                                    . $joiner['name']// . ',' . $joiner['rate']
                                     . ' ' . ($joiner['type'] == 'normal' ? '押' : '梭哈') . $joiner['bet']
                                     . ' 赢' . ($tmp / 100);
                         $strs[] = '上局:' . floor($userInfo->jifen / 100) . ' 本局:' . floor(($userInfo->jifen + $tmp) / 100);
@@ -1007,7 +1007,7 @@ class NiuniuService {
                         $strs[] = '抢:' 
                                     . strval(number_format($result[$joiner['userId']]['amount'] / 100, 2)) 
                                     . '->' 
-                                    . $joiner['name'] . ',' . $joiner['rate']
+                                    . $joiner['name']// . ',' . $joiner['rate']
                                     . ' ' . ($joiner['type'] == 'normal' ? '押' : '梭哈') . $joiner['bet'];
 
                         $strs[] = '上局:' . floor($userInfo->jifen / 100) . ' 本局:' . floor(($userInfo->jifen - $joiners[$i]['bonus']) / 100);
@@ -1042,7 +1042,7 @@ class NiuniuService {
                         $strs[] = '抢:' 
                                     . strval(number_format($result[$joiner['userId']]['amount'] / 100, 2)) 
                                     . '->' 
-                                    . $joiner['name'] . ',' . $joiner['rate']
+                                    . $joiner['name']// . ',' . $joiner['rate']
                                     . ' ' . ($joiner['type'] == 'normal' ? '押' : '梭哈') . $joiner['bet']
                                     . ' 输' . abs($tmp / 100);
                         $strs[] = '上局:' . floor($userInfo->jifen / 100) . ' 本局:' 

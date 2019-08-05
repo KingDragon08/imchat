@@ -1,7 +1,6 @@
 function initChat() {
     window.conn = {};
     WebIM.config = config;
-    console.log(WebIM)
     conn = WebIM.conn = new WebIM.default.connection({
         appKey: WebIM.config.appkey,
         isHttpDNS: WebIM.config.isHttpDNS,
