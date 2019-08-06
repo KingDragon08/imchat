@@ -378,8 +378,7 @@
             <div class="wcim__popupTmpl tmpl-viewRedPacket">
                 <div class="publisher">
                     <i class="hbbg"></i>
-                    <!-- <img class="uimg" id="bonus_result_avatar" src="../img/uimg/u__chat-img08.jpg" /> -->
-                    <div class="div_avatar" id="bonus_result_avatar">-</div>
+                    <img class="uimg" id="bonus_result_avatar" src="../img/uimg/u__chat-img08.jpg" />
                     <h2 class="user" id="bonus_result_name">***</h2>
                     <h4 class="desc">恭喜发财，大吉大利</h4>
                     <div class="total"><em id="bonus_result_total">-</em>*元</div>

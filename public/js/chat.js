@@ -60,8 +60,7 @@ $(function() {
                 $('#bonus_name').text(message.from);
                 $('#bonus_result_name').text(message.from);
                 $('#bonus_avatar').attr('src', 'http://via.placeholder.com/200/ffa93b/ffffff?text=' + message.from);
-                // $('#bonus_result_avatar').attr('src', 'http://via.placeholder.com/200/ffa93b/ffffff?text=' + message.from);
-                $('#bonus_result_avatar').text(message.from[0]);
+                $('#bonus_result_avatar').attr('src', 'http://via.placeholder.com/200/ffa93b/ffffff?text=' + message.from);
                 var getHbIdx = wcPop({
                     id: 'wdtPopGetHb',
                     skin: 'ios',
