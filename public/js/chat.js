@@ -48,13 +48,14 @@ $(function() {
         },
         methods: {
             openBonus: function (message, index) {
-                console.log(message);
+                //console.log(message);
                 // this.bonus.show = true;
                 this.bonus.name = message.from;
                 this.bonus.avatar = '/common/avatar/' + message.from;
                 this.bonus.msg = '恭喜发财,大吉大利';
                 this.bonus.message = message;
                 this.bonus.index = index;
+                this.joiners = -1;
                 var ttt = this;
                 $('#bonus_name').text(message.from);
                 $('#bonus_result_name').text(message.from);
@@ -89,7 +90,8 @@ $(function() {
                                             html += '<li>' +
                                                         '<a class="wcim__material-cell flexbox flex-alignc" href="#">' +
                                                             '<span class="avator">' +
-                                                                '<img src="http://via.placeholder.com/200/2f3130/ffffff?text=' + joiner[i]['username'] + '">' +
+                                                                // '<img src="http://via.placeholder.com/200/2f3130/ffffff?text=' + joiner[i]['username'] + '">' +
+                                                                '<div class="div_avatar">' + joiner[i]['username'][0] + '</div>' + 
                                                             '</span>' +
                                                             '<label class="flex1 flexbox flex-alignc">' +
                                                                 '<span class="flex1">' +
@@ -141,13 +143,15 @@ $(function() {
                         success: function (data) {
                             var joiner = data.data.joiner;
                             if (joiner.length != that.joiners) {
+                                that.joiners = joiner.length;
                                 var html = '';
                                 $('#wcim_hb_fullscreen #bonus_result_list').html(html);
                                 for (let i = 0; i < joiner.length; i++) {
                                     html += '<li>' +
                                                 '<a class="wcim__material-cell flexbox flex-alignc" href="#">' +
                                                     '<span class="avator">' +
-                                                        '<img src="http://via.placeholder.com/200/2f3130/ffffff?text=' + joiner[i]['username'] + '">' +
+                                                        // '<img src="http://via.placeholder.com/200/2f3130/ffffff?text=' + joiner[i]['username'] + '">' +
+                                                        '<div class="div_avatar">' + joiner[i]['username'][0] + '</div>' + 
                                                     '</span>' +
                                                     '<label class="flex1 flexbox flex-alignc">' +
                                                         '<span class="flex1">' +
@@ -164,9 +168,13 @@ $(function() {
                                 }
                                 $('#wcim_hb_fullscreen #bonus_result_list').html(html);    
                             }
-                            setTimeout(function () {
-                                that.refreshBonusResult(bonusId, roomId, counter - 1);    
-                            }, counter == 10 ? 100 : 500);
+                            var start = (new Date()).getTime();
+                            var delay = 500;
+                            while ((new Date()).getTime() - start < delay) {
+                                continue;
+                            }
+                            that.refreshBonusResult(bonusId, roomId, counter - 1);    
+                            
                         }
                     });
                 }
@@ -218,7 +226,6 @@ $(function() {
                 $('#wcPop #label' + index).css('background', 'red');
             },
             startGame: function () {
-                this.members = [1,2,3,4,5,6,7,8,9,0,12,3,4,5,6];
                 var that = this;
                 // 获取聊天室的成员信息
                 $.ajax({
@@ -249,7 +256,7 @@ $(function() {
                                                 // console.log(that.zhuang);
                                                 var shangzhuangJifen = $('#wcPop #shangzhuangJifen').val();
                                                 // console.log(shangzhuangJifen);
-                                                if (that.zhuang != -1 && shangzhuangJifen > 0 && parseInt(shangzhuangJifen) == shangzhuangJifen) {
+                                                if (that.zhuang != -1 && shangzhuangJifen >= 0 && parseInt(shangzhuangJifen) == shangzhuangJifen) {
                                                     // 后台上庄开始
                                                     $.ajax({
                                                         url: '/game/niuniu/create',

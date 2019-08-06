@@ -416,7 +416,7 @@ $(function () {
         pwd: '123456',
         appKey: WebIM.config.appkey
     };
-    // conn.open(options);
+    conn.open(options);
 });
 
 

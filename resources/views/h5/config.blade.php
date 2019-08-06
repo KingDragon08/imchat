@@ -800,7 +800,10 @@
 
     function config() {
         vue.setConfig(function () {
-            // history.go(-1);
+            util.toast('配置成功');
+            setTimeout(function () {
+                history.go(-1);
+            }, 1500);
         });
     }
 

@@ -111,6 +111,7 @@ function startGame(index) {
 
 // 进入聊天界面
 function goGame(room) {
+    // console.log(room);
     // 获取房间详情
     $.ajax({
         url: '/ease/roomInfo',
