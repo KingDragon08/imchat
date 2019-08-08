@@ -16,7 +16,7 @@ html {
 	-webkit-text-size-adjust: none; -ms-text-size-adjust: none;
 }
 body{
-	background-color:#f8f8f8;font:12px/1.5 "PingFang SC","Helvetica Neue",Helvetica,Arial,sans-serif; margin: 0 auto; padding:0; min-width: 320px; max-width: 750px; height: 100%; width: 100%;
+	background-color:#eee;font:12px/1.5 "PingFang SC","Helvetica Neue",Helvetica,Arial,sans-serif; margin: 0 auto; padding:0; min-width: 320px; max-width: 750px; height: 100%; width: 100%;
 }
 body.overflow{overflow:hidden;}
 
