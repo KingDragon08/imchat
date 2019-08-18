@@ -41,17 +41,53 @@ class EaseService {
         $url = env('EASE_HOST') . 'users/' . $username . '/joined_chatgroups';
         $response = $client->request('GET', $url, $headers);
         $groups = json_decode($response->getBody(), true)['data'];
-        $avatars = GroupsModel::select(['groupId', 'avatar', 'owner', 'type'])->whereIn('groupId', array_column($groups, 'groupid'))
+        $groupsInfoUrl = env('EASE_HOST') . 'chatgroups/' . implode(',', array_column($groups, 'groupid'));
+        $res = $client->request('GET', $groupsInfoUrl, $headers);
+        $groupsInfo = json_decode($res->getBody(), true)['data'];
+        $groupsMysqlInfo = GroupsModel::select(['groupId', 'avatar', 'owner', 'type'])->whereIn('groupId', array_column($groups, 'groupid'))
                     ->get()->toArray();
-        foreach ($avatars as &$avatar) {
-            foreach ($groups as $group) {
-                if ($group['groupid'] == $avatar['groupId']) {
-                    $avatar['username'] = $avatar['groupId'];
-                    $avatar['nickname'] = $group['groupname'];
-                    break;
+        $groupsMysqlAvatarInfo = array_column($groupsMysqlInfo, 'avatar', 'groupId');
+        $groupsMysqlTypeInfo = array_column($groupsMysqlInfo, 'avatar', 'groupId');
+        $avatars = [];
+        foreach ($groupsInfo as $group) {
+            $tmp = [
+                'groupId' => $group['id'],
+                'avatar' => [],
+                'customAvatar' => $groupsMysqlAvatarInfo[$group['id']] ?? '',
+                'owner' => '',
+                'type' => $groupsMysqlTypeInfo[$group['id']] ?? '',
+                'username' => $group['id'],
+                'nickname' => $group['name'],
+                'maxusers' => $group['maxusers'],
+                'created' => $group['created'],
+                'users' => []
+            ];
+            if (strpos($tmp['customAvatar'], 'http://via.placeholder.com') !== false) {
+                $tmp['customAvatar'] = '';
+            }
+            $ta = UserModel::select(['avatar', 'username'])->whereIn('username', array_values($group['affiliations']))
+                    ->get()->toArray();
+            $tmp['avatar'] = array_column($ta, 'avatar', 'username');
+            foreach ($group['affiliations'] as $member) {
+                if (isset($member['owner'])) {
+                    $tmp['owner'] = $member['owner'];
+                    $tmp['users'][] = $member['owner'];
+                } else {
+                    $tmp['users'][] = $member['member'];
                 }
             }
+            $avatars[] = $tmp;
         }
+        
+        // foreach ($avatars as &$avatar) {
+        //     foreach ($groups as $group) {
+        //         if ($group['groupid'] == $avatar['groupId']) {
+        //             $avatar['username'] = $avatar['groupId'];
+        //             $avatar['nickname'] = $group['groupname'];
+        //             break;
+        //         }
+        //     }
+        // }
         $ret['groupChat'] = $avatars;
         return $ret;
     }
