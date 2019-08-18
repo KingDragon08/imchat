@@ -47,7 +47,7 @@ class EaseService {
         $groupsMysqlInfo = GroupsModel::select(['groupId', 'avatar', 'owner', 'type'])->whereIn('groupId', array_column($groups, 'groupid'))
                     ->get()->toArray();
         $groupsMysqlAvatarInfo = array_column($groupsMysqlInfo, 'avatar', 'groupId');
-        $groupsMysqlTypeInfo = array_column($groupsMysqlInfo, 'avatar', 'groupId');
+        $groupsMysqlTypeInfo = array_column($groupsMysqlInfo, 'type', 'groupId');
         $avatars = [];
         foreach ($groupsInfo as $group) {
             $tmp = [
