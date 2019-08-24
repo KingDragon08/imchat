@@ -36,7 +36,6 @@ class MomentsController extends Controller {
             $data = MomentsService::sync($request->input('currentLocalMaxMessageId', -1), $request->id);
             return response()->json(['status' => 0, 'msg' => 'ok', 'data' => $data]);
         } catch (Exception $e) {
-            dd($e);
             return response()->json(['status' => 1, 'msg' => '同步朋友圈数据失败']);   
         }
     }

@@ -45,9 +45,9 @@ class MomentsService {
                                 ->get()->toArray();
             $arr = ['thumb.id', 'thumb.userId', 'thumb.timestamp', 'user.nickname', 'user.username', 'user.avatar'];
             $item['thumb'] = DB::table('thumb')->select($arr)->where('momentsId', $item['id'])
-                                ->join('user', function ($join) use($friends) {
+                                ->join('user', function ($join) use ($friends) {
                                     $join->on('thumb.userId', '=', 'user.id')
-                                        ->where('comments.userId', 'in', array_column($friends, 'id'));
+                                        ->where('thumb.userId', 'in', array_column($friends, 'id'));
                                 })
                                 ->get()->toArray();
         }
