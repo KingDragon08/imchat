@@ -38,14 +38,60 @@ class MomentsService {
             $item['avatar'] = $friends[$index]['avatar'];
             $arr = ['comments.id', 'comments.content', 'comments.userId', 'comments.timestamp', 'user.nickname', 'user.username', 'user.avatar'];
             $item['comments'] = DB::table('comments')->select($arr)->where('momentsId', $item['id'])
-                                ->join('user', function ($join) {
-                                    $join->on('comments.userId', '=', 'user.id');
+                                ->join('user', function ($join) use ($friends) {
+                                    $join->on('comments.userId', '=', 'user.id')
+                                        ->where('comments.userId', 'in', array_column($friends, 'id'));
                                 })
                                 ->get()->toArray();
             $arr = ['thumb.id', 'thumb.userId', 'thumb.timestamp', 'user.nickname', 'user.username', 'user.avatar'];
             $item['thumb'] = DB::table('thumb')->select($arr)->where('momentsId', $item['id'])
-                                ->join('user', function ($join) {
-                                    $join->on('thumb.userId', '=', 'user.id');
+                                ->join('user', function ($join) use($friends) {
+                                    $join->on('thumb.userId', '=', 'user.id')
+                                        ->where('comments.userId', 'in', array_column($friends, 'id'));
+                                })
+                                ->get()->toArray();
+        }
+        return $data;
+    }
+
+    /**
+     * 同步服务端和app缓存朋友圈信息
+     * @param  [type] $id app缓存的最新一条朋友圈id
+     * @return [type]     [description]
+     */
+    public static function sync($id, $userId) {
+        if ($id == -1) {
+            return [];
+        }
+        $user = UserModel::select(['id', 'username', 'nickname', 'avatar'])->where('id', $userId)->first();
+        $friends = EaseService::friends($user->username)['chat'];
+        $friends[] = [
+            'id' => $user->id,
+            'nickname' => $user->nickname,
+            'username' => $user->username,
+            'avatar' => $user->avatar
+        ];
+        $data = MomentsModel::select('*')->whereIn('userId', array_column($friends, 'id'))
+                ->where([['id', '>', $id]])
+                ->orderBy('id', 'desc')
+                ->get()->toArray();
+        foreach ($data as &$item) {
+            $index = array_search($item['userId'], array_column($friends, 'id'));
+            $item['username'] = $friends[$index]['username'];
+            $item['nickname'] = $friends[$index]['nickname'];
+            $item['avatar'] = $friends[$index]['avatar'];
+            $arr = ['comments.id', 'comments.content', 'comments.userId', 'comments.timestamp', 'user.nickname', 'user.username', 'user.avatar'];
+            $item['comments'] = DB::table('comments')->select($arr)->where('momentsId', $item['id'])
+                                ->join('user', function ($join) use ($friends) {
+                                    $join->on('comments.userId', '=', 'user.id')
+                                        ->where('comments.userId', 'in', array_column($friends, 'id'));
+                                })
+                                ->get()->toArray();
+            $arr = ['thumb.id', 'thumb.userId', 'thumb.timestamp', 'user.nickname', 'user.username', 'user.avatar'];
+            $item['thumb'] = DB::table('thumb')->select($arr)->where('momentsId', $item['id'])
+                                ->join('user', function ($join) use ($friends) {
+                                    $join->on('thumb.userId', '=', 'user.id')
+                                        ->where('thumb.userId', 'in', array_column($friends, 'id'));
                                 })
                                 ->get()->toArray();
         }

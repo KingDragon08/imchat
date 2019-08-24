@@ -65,6 +65,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::group(['prefix' => 'moments', 'namespace' => 'User'], function () {
         Route::get('/', 'MomentsController@get');
         Route::get('/moments', 'MomentsController@getMoments');
+        Route::get('/sync', 'MomentsController@syncMoments');
         Route::post('/', 'MomentsController@create');
         Route::post('/like', 'MomentsController@like');
         Route::post('/comment', 'MomentsController@comment');
