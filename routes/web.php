@@ -60,6 +60,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::any('changeUserInfo', 'UserController@changeUserInfo');
         Route::put('changePwd', 'UserController@changePwd');
         Route::any('getUserInfo', 'UserController@getUserInfo');
+        Route::put('changeShoukuanma', 'UserController@changeShoukuanma');
+        Route::put('changeBonusToJifen', 'UserController@changeBonusToJifen');
+        Route::post('uploadPingzheng', 'UserController@uploadPingzheng');
     });
 
     Route::group(['prefix' => 'moments', 'namespace' => 'User'], function () {

@@ -4,6 +4,7 @@ use App\Models\UserModel;
 use App\Models\GroupsModel;
 use App\Models\BonusModel;
 use App\Models\ChatRoomsModel;
+use App\Models\ChargeModel;
 use Cache;
 use Exception;
 use DB;
@@ -16,20 +17,28 @@ class UserService {
 
     /**
      * 注册账号
-     * @param  string $username [description]
-     * @param  string $password [description]
-     * @return [type]           [description]
+     * @param  string $username  [description]
+     * @param  string $password  [description]
+     * @param  string $shareCode [description]
+     * @return [type]            [description]
      */
-    public static function register(string $username, string $password) {
+    public static function register(string $username, string $password, string $shareCode) {
         // 判断用户名是否已经存在
         $isExist = UserModel::select('id')->where('username', $username)->count();
         if ($isExist > 0) {
             throw new Exception("用户名已存在");
         }
+        if ($shareCode != '') {
+            // $shareCode = base64_decode($shareCode);
+            if (intval(base64_decode($shareCode)) < 1) {
+                throw new Exception("无效的邀请码");
+            }
+        }
         $userModel = new UserModel();
         $userModel->nickname = $username;
         $userModel->username = $username;
         $userModel->password = md5($password);
+        $userModel->agent = $shareCode;
         $userModel->jifen = 0;
         $userModel->bonus = 0;
         $userModel->avatar = 'http://via.placeholder.com/200/f2f2f2/666666?text=' . $username;
@@ -45,7 +54,7 @@ class UserService {
     public static function login(string $username, string $password) {
         $data = UserModel::select(['id', 'nickname', 'username', 'jifen', 
                                     'bonus', 'created_at', 'avatar', 'pyqImg', 'sign',
-                                    'agent', 'phone', 'email'])
+                                    'agent', 'phone', 'email', 'shoukuanma'])
                     ->where('username', $username)->where('password', md5($password))
                     ->get()->toArray();
         if (empty($data)) {
@@ -107,6 +116,44 @@ class UserService {
             throw new Exception($e->getMessage());
         }
 
+    }
+
+    /**
+     * 上传收款码
+     * @param  [type] $id  [description]
+     * @param  [type] $url [description]
+     * @return [type]      [description]
+     */
+    public static function changeShoukuanma($id, $url) {
+        $userModel = UserModel::select('*')->where('id', $id)->first();
+        $userModel->shoukuanma = $url;
+        $userModel->save();
+    }
+
+    /**
+     * 转换红包为积分
+     * @param  [type] $id [description]
+     * @return [type]     [description]
+     */
+    public static function changeBonusToJifen($id) {
+        $userModel = UserModel::select('*')->where('id', $id)->first();
+        $userModel->jifen += $userModel->bonus;
+        $userModel->bonus = 0;
+        $userModel->save();
+    }
+
+    /**
+     * 上传充值凭证
+     * @param  [type] $id  [description]
+     * @param  [type] $url [description]
+     * @return [type]      [description]
+     */
+    public static function uploadPingzheng($id, $url) {
+        $chargeModel = new ChargeModel();
+        $chargeModel->url = $url;
+        $chargeModel->userId = $id;
+        $chargeModel->timestamp = time();
+        $chargeModel->save();
     }
 
     /**

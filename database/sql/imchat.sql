@@ -133,6 +133,7 @@ CREATE TABLE `user` (
   `agent` varchar(45) DEFAULT NULL,
   `phone` varchar(45) DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
+  `shoukuanma` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb4;
 
@@ -141,11 +142,17 @@ CREATE TABLE `imchat`.`admin` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `username` VARCHAR(45) NOT NULL,
   `password` VARCHAR(200) NOT NULL,
+  `role` VARCHAR(45) NOT NULL DEFAULT 'agent' COMMENT 'Agent or admin',
   `created_time` VARCHAR(45) NULL,
   PRIMARY KEY (`id`));
 
-ALTER TABLE `imchat`.`admin` 
-ADD COLUMN `role` VARCHAR(45) NOT NULL DEFAULT 'agent' COMMENT 'Agent or admin' AFTER `created_time`;
+CREATE TABLE `imchat`.`charge` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `userId` INT NOT NULL,
+  `url` VARCHAR(255) NOT NULL,
+  `timestamp` VARCHAR(45) NOT NULL,
+  `status` INT NOT NULL DEFAULT 0 COMMENT '处理状态，0->上传，1->已通过，2->已拒绝',
+  PRIMARY KEY (`id`));
 
 INSERT INTO `imchat`.`admin` (`username`, `password`, `created_time`, `role`) VALUES ('admin', 'e10adc3949ba59abbe56e057f20f883e', '1562340091', 'admin');
 
