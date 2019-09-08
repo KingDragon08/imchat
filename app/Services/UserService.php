@@ -5,6 +5,7 @@ use App\Models\GroupsModel;
 use App\Models\BonusModel;
 use App\Models\ChatRoomsModel;
 use App\Models\ChargeModel;
+use App\Models\JifenRecordModel;
 use Cache;
 use Exception;
 use DB;
@@ -22,7 +23,7 @@ class UserService {
      * @param  string $shareCode [description]
      * @return [type]            [description]
      */
-    public static function register(string $username, string $password, string $shareCode) {
+    public static function register(string $username, string $password, $shareCode) {
         // 判断用户名是否已经存在
         $isExist = UserModel::select('id')->where('username', $username)->count();
         if ($isExist > 0) {
@@ -70,7 +71,7 @@ class UserService {
         ]);
         $data['token'] = $token;
         $data['timestamp'] = time();
-        $data['easename'] = env('APP_NAME') . $username;
+        $data['easename'] = strtolower(env('APP_NAME') . $username);
         return $data;
     }
 
@@ -532,10 +533,13 @@ class UserService {
      * @param  int    $id   [description]
      * @param  string $pwd  [description]
      * @param  string $npwd [description]
+     * @param  bool   $isPlainPwd
      * @return [type]       [description]
      */
-    public static function changePwd(int $id, string $pwd, string $npwd) {
-        $pwd = md5($pwd);
+    public static function changePwd(int $id, string $pwd, string $npwd, $isPlainPwd=true) {
+        if ($isPlainPwd) {
+            $pwd = md5($pwd);
+        }
         $user = UserModel::find($id);
         if ($user->password != $pwd) {
             throw new Exception("原始密码错误");
@@ -598,8 +602,56 @@ class UserService {
         ];
     }
 
+    /**
+     * 更改积分
+     * @param  [type] $id    [description]
+     * @param  [type] $jifen [description]
+     * @return [type]        [description]
+     */
+    public static function changeJifen($id, $jifen) {
+        DB::beginTransaction();
+        try {
+            $user = UserModel::find($id);
+            $oJifen = $user->jifen;
+            // 分数变更
+            $diffJifen = $jifen - $oJifen;
+            $user->jifen = $jifen;
+            $user->save();
+            $jifenRecordModel = new JifenRecordModel();
+            $jifenRecordModel->userId = $id;
+            $jifenRecordModel->jifen = $diffJifen;
+            $jifenRecordModel->des = '后台上分';
+            $jifenRecordModel->gameId = -1;
+            $jifenRecordModel->timestamp = time();
+            $jifenRecordModel->save();
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            throw new Exception($e);
+        }
+    }
 
+    /**
+     * 更改用户红包余额
+     * @param  [type] $id    [description]
+     * @param  [type] $bonus [description]
+     * @return [type]        [description]
+     */
+    public static function changeBonus($id, $bonus) {
+        $user = UserModel::find($id);
+        $user->bonus = $bonus;
+        $user->save();
+    }
 
+    /**
+     * 删除用户
+     * @param  [type] $id [description]
+     * @return [type]     [description]
+     */
+    public static function delUser($id) {
+        $user = UserModel::find($id);
+        $user->delete();
+    }
 
 
 }

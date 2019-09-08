@@ -146,6 +146,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function () {
 });
 
 Route::group(['middleware' => 'adminAuth', 'prefix' => 'admin', 'namespace' => 'Admin'], function () {
+    // 页面
     Route::get('/', 'AdminController@user');
     Route::get('/user', 'AdminController@user');
     Route::get('/room', 'AdminController@room');
@@ -153,9 +154,22 @@ Route::group(['middleware' => 'adminAuth', 'prefix' => 'admin', 'namespace' => '
     Route::get('/admin', 'AdminController@admin');
     Route::get('/agent', 'AdminController@agent');
     Route::get('/bet', 'AdminController@bet');
-
+    // 用户相关接口
     Route::get('/userList', 'AdminController@userList');
-
+    Route::post('/changeUserPassword', 'AdminController@changeUserPassword');
+    Route::post('/changeUserJifen', 'AdminController@changeUserJifen');
+    Route::post('/changeUserBonus', 'AdminController@changeUserBonus');
+    Route::post('/delUser', 'AdminController@delUser');
+    // 房间相关接口
+    Route::get('/roomList', 'AdminController@roomList');
+    Route::post('/changeRoomRules', 'AdminController@changeRoomRules');
+    Route::delete('/delRoom', 'AdminController@delRoom');
+    // 历史游戏相关
+    Route::get('/gameList', 'AdminController@gameList');
+    // 管理员相关
+    Route::get('/admins', 'AdminController@admins');
+    Route::put('/changeAdminName', 'AdminController@changeAdminName');
+    Route::put('/changeAdminPassword', 'AdminController@changeAdminPassword');
 });
 
 

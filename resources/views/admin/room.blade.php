@@ -33,9 +33,124 @@
                         content: [
                             nav,
                             {
-                                type: 'content',
-                                style: {background: '#ffffff', color: '#333', minHeight: window.innerHeight - 164},
-                                content: '房间列表'
+                                type: 'card',
+                                style: {background: '#ffffff', color: '#333', minHeight: window.innerHeight - 164, width: '100%'},
+                                content: {
+                                    type: 'table',
+                                    name: 'room-table',
+                                    bordered: true,
+                                    pagination: {
+                                        pageSize: 10,
+                                        pageType: 'client'
+                                    },
+                                    title: {
+                                        text: '游戏房间列表',
+                                        basicWidget: [
+                                            'setPageSize',
+                                            'export',
+                                            'switchTags',
+                                            'fullScreen'
+                                        ]
+                                    },
+                                    columns: [
+                                        {
+                                            title: 'ID',
+                                            dataIndex: 'id'
+                                        },
+                                        {
+                                            title: '房间ID',
+                                            dataIndex: 'roomId'
+                                        },
+                                        {
+                                            title: '图标',
+                                            dataIndex: 'avatar',
+                                            render: function (text) {
+                                                if (text) {
+                                                    return {
+                                                        type: 'img',
+                                                        src: text,
+                                                        width: 60
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        {
+                                            title: '房主',
+                                            dataIndex: 'owner'
+                                        },
+                                        {
+                                            title: '管理员',
+                                            dataIndex: 'admin',
+                                            ellipsis: true,
+                                            render: function (text, record) {
+                                                return text.join(',');
+                                            }
+                                        },
+                                        {
+                                            title: '配置',
+                                            dataIndex: 'cfg',
+                                            textType: 'json',
+                                            ellipsis: true
+                                        },
+                                        {
+                                            title: '规则',
+                                            dataIndex: 'rules',
+                                            ellipsis: true,
+                                            editable: function (text, record) {
+                                                return {
+                                                    type: 'input',
+                                                    name: 'rules',
+                                                    rules: {
+                                                        required: true
+                                                    },
+                                                    api: {
+                                                        url: '/admin/changeRoomRules',
+                                                        method: 'post',
+                                                        paramsHandler: function () {
+                                                            return {
+                                                                id: record.id,
+                                                                rules: UF('rules').getValue()
+                                                            }
+                                                        },
+                                                        onSuccess: function (data) {
+                                                            UF('room-table').refresh();
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        {
+                                            title: '操作',
+                                            data: '_operation',
+                                            render: function (text, record) {
+                                                return {
+                                                    type: 'button',
+                                                    mode: 'failure',
+                                                    content: '删除',
+                                                    onClick: function () {
+                                                        UF.Modal.confirm({
+                                                            title: '提示',
+                                                            content: '确认删除？删除后不可恢复!!!',
+                                                            onOk: function () {
+                                                                UF.ajax({
+                                                                    url: '/admin/delRoom',
+                                                                    params: {
+                                                                        id: record.id
+                                                                    },
+                                                                    method: 'delete',
+                                                                    success: function () {
+                                                                        UF('room-table').refresh();
+                                                                    }
+                                                                });
+                                                            }
+                                                        });
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    source: '/admin/roomList'
+                                }
                             }
                         ]
                     }

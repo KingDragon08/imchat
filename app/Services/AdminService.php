@@ -5,6 +5,8 @@ use App\Models\GroupsModel;
 use App\Models\BonusModel;
 use App\Models\ChatRoomsModel;
 use App\Models\AdminModel;
+use App\Models\NiuniuModel;
+use App\Services\UserService;
 use Cache;
 use Exception;
 use DB;
@@ -80,7 +82,73 @@ class AdminService {
         Cache::forget($id);
     }
 
+    /**
+     * 更改游戏刚见规则说明
+     * @param  [type] $id    [description]
+     * @param  [type] $rules [description]
+     * @return [type]        [description]
+     */
+    public static function changeRoomRules($id, $rules) {
+        $room = ChatRoomsModel::find($id);
+        $room->rules = $rules;
+        $room->save();
+    }
 
+    /**
+     * 删除游戏房间
+     * @param  [type] $id [description]
+     * @return [type]     [description]
+     */
+    public static function delRoom($id) {
+        $room = ChatRoomsModel::find($id);
+        $room->delete();
+    }
+
+    /**
+     * 获取游戏历史列表
+     * @param  [type] $whereArr [description]
+     * @return [type]           [description]
+     */
+    public static function gameList($whereArr) {
+        $data = NiuniuModel::select('*')->where($whereArr)->orderBy('id', 'desc')->get()->toArray();
+        for ($i=0; $i<count($data); $i++) {
+            $data[$i]['timestamp'] = date('Y-m-d H:i:s', $data[$i]['timestamp']);
+        }
+        return $data;
+    }
+
+    /**
+     * 获取管理员列表
+     * @return [type] [description]
+     */
+    public static function getAdmins() {
+        $data = AdminModel::select('*')->where('role', 'admin')->orderBy('id', 'desc')->get()->toArray();
+        return $data;
+    }
+
+    /**
+     * 更改管理员用户名
+     * @param  [type] $id   [description]
+     * @param  [type] $name [description]
+     * @return [type]       [description]
+     */
+    public static function changeAdminName($id, $name) {
+        $admin = AdminModel::find($id);
+        $admin->username = $name;
+        $admin->save();
+    }
+
+    /**
+     * 更改管理员密码
+     * @param  [type] $id       [description]
+     * @param  [type] $password [description]
+     * @return [type]           [description]
+     */
+    public static function changeAdminPassword($id, $password) {
+        $admin = AdminModel::find($id);
+        $admin->password = md5($password);
+        $admin->save();
+    }
 
 }
 

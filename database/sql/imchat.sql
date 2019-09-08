@@ -156,4 +156,12 @@ CREATE TABLE `imchat`.`charge` (
 
 INSERT INTO `imchat`.`admin` (`username`, `password`, `created_time`, `role`) VALUES ('admin', 'e10adc3949ba59abbe56e057f20f883e', '1562340091', 'admin');
 
+CREATE TABLE `imchat`.`jifen_record` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `userId` INT NOT NULL,
+  `jifen` INT NOT NULL COMMENT '分',
+  `des` VARCHAR(200) NOT NULL COMMENT '变更类型',
+  `gameId` INT NOT NULL DEFAULT -1 COMMENT '游戏ID，后台操作时为-1',
+  `timestamp` VARCHAR(45) NOT NULL COMMENT '时间戳',
+  PRIMARY KEY (`id`));
 

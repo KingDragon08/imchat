@@ -33,9 +33,124 @@
                         content: [
                             nav,
                             {
-                                type: 'content',
-                                style: {background: '#ffffff', color: '#333', minHeight: window.innerHeight - 164},
-                                content: '历史游戏'
+                                type: 'card',
+                                style: {background: '#ffffff', color: '#333', minHeight: window.innerHeight - 164, width: '100%'},
+                                content: {
+                                    type: 'table',
+                                    name: 'game-table',
+                                    bordered: true,
+                                    pagination: {
+                                        pageSize: 10,
+                                        pageType: 'client'
+                                    },
+                                    title: {
+                                        basicWidget: [
+                                            'setPageSize',
+                                            'export',
+                                            'switchTags',
+                                            'fullScreen'
+                                        ],
+                                        extra: [
+                                            {
+                                                type: 'select',
+                                                name: 'roomId',
+                                                style: {
+                                                    width: '200px'
+                                                },
+                                                placeholder: '按房间查询',
+                                                source: {
+                                                    url: '/common/rooms',
+                                                    params: {
+                                                        type: 'niuniu'
+                                                    },
+                                                    handler: function (data) {
+                                                        var options = [];
+                                                        for (var i=0; i<data.length; i++) {
+                                                            options.push({
+                                                                label: data[i]['name'],
+                                                                value: data[i]['roomId']
+                                                            });
+                                                        }
+                                                        return options;
+                                                    }
+                                                },
+                                                onSelect: function (val) {
+                                                    UF('game-table').set({
+                                                        params: {
+                                                            roomId: val
+                                                        }
+                                                    });
+                                                }
+                                            },
+                                            {
+                                                type: 'button',
+                                                mode: 'primary',
+                                                content: '重置',
+                                                style: {
+                                                    marginLeft: '14px'
+                                                },
+                                                onClick: function () {
+                                                    UF('game-table').set({
+                                                        params: {}
+                                                    });
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    columns: [
+                                        {
+                                            title: 'ID',
+                                            dataIndex: 'id'
+                                        },
+                                        {
+                                            title: '房间ID',
+                                            dataIndex: 'roomId'
+                                        },
+                                        {
+                                            title: '红包ID',
+                                            dataIndex: 'bonusId'
+                                        },
+                                        {
+                                            title: '庄',
+                                            dataIndex: 'banker'
+                                        },
+                                        {
+                                            title: '状态',
+                                            dataIndex: 'status',
+                                            enum: [
+                                                {
+                                                    key: 0,
+                                                    value: '已结束'
+                                                },
+                                                {
+                                                    key: 1,
+                                                    value: '进行中'
+                                                },
+                                                {
+                                                    key: -1,
+                                                    value: '重推作废'
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            title: '下注记录',
+                                            dataIndex: 'joiners',
+                                            textType: 'json',
+                                            ellipsis: true
+                                        },
+                                        {
+                                            title: '游戏结果',
+                                            dataIndex: 'result',
+                                            textType: 'json',
+                                            ellipsis: true
+                                        },
+                                        {
+                                            title: '时间',
+                                            dataIndex: 'timestamp'
+                                        }
+                                    ],
+                                    source: '/admin/gameList'
+                                }
                             }
                         ]
                     }

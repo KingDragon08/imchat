@@ -33,8 +33,8 @@
                         content: [
                             nav,
                             {
-                                type: 'content',
-                                style: {background: '#ffffff', color: '#333', minHeight: window.innerHeight - 164},
+                                type: 'card',
+                                style: {background: '#ffffff', color: '#333', minHeight: window.innerHeight - 164, width: '100%'},
                                 content: {
                                     type: 'table',
                                     name: 'user-table',
@@ -53,9 +53,20 @@
                                         extra: [
                                             {
                                                 type: 'input',
+                                                name: 'agent',
+                                                showSearch: true,
+                                                placeholder: '按代理搜索',
+                                                style: {
+                                                    width: '200px',
+                                                    marginLeft: '14px'
+                                                },
+                                                allowClear: true
+                                            },
+                                            {
+                                                type: 'input',
                                                 name: 'user',
                                                 showSearch: true,
-                                                placeholder: '模糊搜索用户名',
+                                                placeholder: '按用户名搜索',
                                                 style: {
                                                     width: '200px',
                                                     marginLeft: '14px'
@@ -70,16 +81,31 @@
                                                     margin: '14px',
                                                 },
                                                 onClick: function () {
-                                                    
+                                                    var agent = UF('agent').getValue();
+                                                    var user = UF('user').getValue();
+                                                    var params = {};
+                                                    if (agent && agent.length) {
+                                                        params.agent = agent;
+                                                    }
+                                                    if (user && user.length) {
+                                                        params.user = user;
+                                                    }
+                                                    if (params.hasOwnProperty('agent') ||
+                                                        params.hasOwnProperty('user')) {
+                                                        UF('user-table').set({
+                                                            params: params
+                                                        });
+                                                    }
                                                 }
                                             },
                                             {
                                                 type: 'button',
                                                 mode: 'primary',
-                                                icon: 'plus',
-                                                content: '添加',
+                                                content: '重置',
                                                 onClick: function () {
-                                                    alert(1)
+                                                    UF('user-table').set({
+                                                        params: {}
+                                                    });
                                                 }
                                             }
                                         ]
@@ -119,42 +145,82 @@
                                             dataIndex: 'password',
                                             width: 100,
                                             ellipsis: true,
-                                            editable: {
-                                                type: 'input',
-                                                name: 'password',
-                                                rules: {
-                                                    required: true,
-                                                    min: 6
-                                                },
-                                                api: '/admin/changeUserPassword'
+                                            editable: function (text, record) {
+                                                return {
+                                                    type: 'input',
+                                                    name: 'password',
+                                                    rules: {
+                                                        required: true,
+                                                        min: 6
+                                                    },
+                                                    api: {
+                                                        url: '/admin/changeUserPassword',
+                                                        paramsHandler: function () {
+                                                            return {
+                                                                id: record.id,
+                                                                password: record.password,
+                                                                npassword: UF('password').getValue()
+                                                            }
+                                                        },
+                                                        onSuccess: function (data) {
+                                                            UF('user-table').refresh();
+                                                        }
+                                                    }
+                                                }
                                             }
                                         },
                                         {
                                             title: '积分【分】',
                                             dataIndex: 'jifen',
-                                            editable: {
-                                                type: 'input',
-                                                name: 'jifen',
-                                                rules: {
-                                                    required: true,
-                                                    min: 0,
-                                                    type: 'number'
-                                                },
-                                                api: '/admin/changeUserJifen'
+                                            editable: function (text, record) {
+                                                return {
+                                                    type: 'input',
+                                                    name: 'jifen',
+                                                    rules: {
+                                                        required: true,
+                                                        min: 0,
+                                                        type: 'number'
+                                                    },
+                                                    api: {
+                                                        url: '/admin/changeUserJifen',
+                                                        paramsHandler: function () {
+                                                            return {
+                                                                id: record.id,
+                                                                jifen: UF('jifen').getValue()
+                                                            }
+                                                        },
+                                                        onSuccess: function (data) {
+                                                            UF('user-table').refresh();
+                                                        }
+                                                    }
+                                                }
                                             }
                                         },
                                         {
-                                            title: '红包',
+                                            title: '红包【分】',
                                             dataIndex: 'bonus',
-                                            editable: {
-                                                type: 'input',
-                                                name: 'bonus',
-                                                rules: {
-                                                    required: true,
-                                                    min: 0,
-                                                    type: 'number'
-                                                },
-                                                api: '/admin/changeUserBonus'
+                                            editable: function (text, record) {
+                                                return {
+                                                    type: 'input',
+                                                    name: 'bonus',
+                                                    rules: {
+                                                        required: true,
+                                                        min: 0,
+                                                        type: 'number'
+                                                    },
+                                                    api: {
+                                                        url: '/admin/changeUserBonus',
+                                                        paramsHandler: function () {
+                                                            return {
+                                                                id: record.id,
+                                                                bonus: UF('bonus').getValue()
+                                                            };
+                                                        },
+                                                        onSuccess: function (data) {
+                                                            UF('user-table').refresh();
+                                                        }
+                                                    }
+                                                };
                                             }
                                         },
                                         {
@@ -175,6 +241,35 @@
                                         {
                                             title: '邮箱',
                                             dataIndex: 'email'
+                                        },
+                                        {
+                                            title: '操作',
+                                            data: '_operation',
+                                            render: function (text, record) {
+                                                return {
+                                                    type: 'button',
+                                                    mode: 'failure',
+                                                    content: '删除',
+                                                    onClick: function () {
+                                                        UF.Modal.confirm({
+                                                            title: '提示',
+                                                            content: '确认删除？删除后不可恢复!!!',
+                                                            onOk: function () {
+                                                                UF.ajax({
+                                                                    url: '/admin/delUser',
+                                                                    params: {
+                                                                        id: record.id
+                                                                    },
+                                                                    method: 'post',
+                                                                    success: function () {
+                                                                        UF('user-table').refresh();
+                                                                    }
+                                                                });
+                                                            }
+                                                        });
+                                                    }
+                                                }
+                                            }
                                         }
                                     ],
                                     source: '/admin/userList'

@@ -39,18 +39,18 @@ window.nav = {
                 title: '管理员',
                 link: window.host + 'admin'
             },
-            {
-                key: 'agent',
-                icon: 'star-o',
-                title: '代理列表',
-                link: window.host + 'agent'
-            },
-            {
-                key: 'bet',
-                icon: 'heart-o',
-                title: '下注记录',
-                link: window.host + 'bet'
-            },
+            // {
+            //     key: 'agent',
+            //     icon: 'star-o',
+            //     title: '代理列表',
+            //     link: window.host + 'agent'
+            // },
+            // {
+            //     key: 'bet',
+            //     icon: 'heart-o',
+            //     title: '下注记录',
+            //     link: window.host + 'bet'
+            // },
         ]
     }
 }

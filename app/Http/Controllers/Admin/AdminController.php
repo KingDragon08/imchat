@@ -8,6 +8,9 @@ use Validator;
 use Exception;
 use App\Services\UserService;
 use App\Services\AdminService;
+use App\Services\CommonService;
+use App\Services\EaseService;
+use App\Services\NiuniuService;
 
 class AdminController extends Controller
 {
@@ -120,14 +123,186 @@ class AdminController extends Controller
         $userInfo = AdminService::getUserInfo();
         $page = $request->input('page', 1);
         $size = $request->input('size', 10);
+        $agent = $request->input('agent', null);
+        $user = $request->input('user', null);
         try {
-            $data = UserService::getList($page, $size);
+            $whereArr = [];
+            if ($agent) {
+                $whereArr[] = ['agent', 'like', '%' . $agent . '%'];
+            }
+            if ($user) {
+                $whereArr[] = ['username', 'like', '%' . $user . '%'];
+            }
+            $data = UserService::getList($page, $size, $whereArr);
             return response()->json(['status' => 0, 'msg' => 'ok', 'data' => $data['data'], 'total' => $data['total']]);    
         } catch (Exception $e) {
             return response()->json(['status' => 1, 'msg' => $e->getMessage()]);
         }
     }
 
+    /**
+     * 后台更改用户密码
+     * @param  Request $request [description]
+     * @return [type]           [description]
+     */
+    public function changeUserPassword(Request $request) {
+        try {
+            UserService::changePwd($request->id, $request->password, $request->npassword, false);
+            return response()->json(['status' => 0, 'msg' => 'ok', 'data' => 'ok']);
+        } catch (Exception $e) {
+            return response()->json(['status' => 1, 'msg' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * 更改用户积分
+     * @param  Request $request [description]
+     * @return [type]           [description]
+     */
+    public function changeUserJifen(Request $request) {
+        try {
+            UserService::changeJifen($request->id, $request->jifen);
+            return response()->json(['status' => 0, 'msg' => 'ok', 'data' => 'ok']);
+        } catch (Exception $e) {
+            return response()->json(['status' => 1, 'msg' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * 更改用户红包
+     * @param  Request $request [description]
+     * @return [type]           [description]
+     */
+    public function changeUserBonus(Request $request) {
+        try {
+            UserService::changeBonus($request->id, $request->bonus);
+            return response()->json(['status' => 0, 'msg' => 'ok', 'data' => 'ok']);
+        } catch (Exception $e) {
+            return response()->json(['status' => 1, 'msg' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * 删除用户
+     * @param  Request $request [description]
+     * @return [type]           [description]
+     */
+    public function delUser(Request $request) {
+        try {
+            UserService::delUser($request->id);
+            return response()->json(['status' => 0, 'msg' => 'ok', 'data' => 'ok']);
+        } catch (Exception $e) {
+            return response()->json(['status' => 1, 'msg' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * 获取房间列表
+     * @param  Request $request [description]
+     * @return [type]           [description]
+     */
+    public function roomList(Request $request) {
+        try {
+            $data = CommonService::getGameRooms('niuniu');
+            for ($i=0; $i<count($data); $i++) {
+                $data[$i]['admin'] = EaseService::getRoomAdmin($data[$i]['roomId']);
+            }
+            return response()->json(['status' => 0, 'msg' => 'ok', 'data' => $data, 'total' => count($data)]);
+        } catch (Exception $e) {
+            return response()->json(['status' => 1, 'msg' => $e->getMessage()]);
+        }   
+    }
+
+    /**
+     * 更改房间规则说明
+     * @param  Request $request [description]
+     * @return [type]           [description]
+     */
+    public function changeRoomRules(Request $request) {
+        try {
+            AdminService::changeRoomRules($request->id, $request->rules);
+            return response()->json(['status' => 0, 'msg' => 'ok', 'data' => 'ok']);
+        } catch (Exception $e) {
+            return response()->json(['status' => 1, 'msg' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * 删除游戏房间
+     * @param  Request $request [description]
+     * @return [type]           [description]
+     */
+    public function delRoom(Request $request) {
+        try {
+            AdminService::delRoom($request->id);
+            return response()->json(['status' => 0, 'msg' => 'ok', 'data' => 'ok']);
+        } catch (Exception $e) {
+            return response()->json(['status' => 1, 'msg' => $e->getMessage()]);
+        }   
+    }
+
+    /**
+     * 历史游戏列表
+     * @param  Request $request [description]
+     * @return [type]           [description]
+     */
+    public function gameList(Request $request) {
+        try {
+            $whereArr = [];
+            if ($request->has('gameId')) {
+                $whereArr[] = ['id', $request->gameId];
+            }
+            if ($request->has('roomId')) {
+                $whereArr[] = ['roomId', $request->roomId];
+            }
+            $data = AdminService::gameList($whereArr);
+            return response()->json(['status' => 0, 'msg' => 'ok', 'data' => $data, 'total' => count($data)]);
+        } catch (Exception $e) {
+            return response()->json(['status' => 1, 'msg' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * 管理员列表
+     * @param  Request $request [description]
+     * @return [type]           [description]
+     */
+    public function admins(Request $request) {
+        try {
+            $data = AdminService::getAdmins();
+            return response()->json(['status' => 0, 'msg' => 'ok', 'data' => $data, 'total' => count($data)]);
+        } catch (Exception $e) {
+            return response()->json(['status' => 1, 'msg' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * 更改管理员用户名
+     * @param  Request $request [description]
+     * @return [type]           [description]
+     */
+    public function changeAdminName(Request $request) {
+        try {
+            AdminService::changeAdminName($request->id, $request->name);
+            return response()->json(['status' => 0, 'msg' => 'ok', 'data' => 'ok']);
+        } catch (Exception $e) {
+            return response()->json(['status' => 1, 'msg' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * 更改管理员密码
+     * @param  Request $request [description]
+     * @return [type]           [description]
+     */
+    public function changeAdminPassword(Request $request) {
+        try {
+            AdminService::changeAdminPassword($request->id, $request->password);
+            return response()->json(['status' => 0, 'msg' => 'ok', 'data' => 'ok']);
+        } catch (Exception $e) {
+            return response()->json(['status' => 1, 'msg' => $e->getMessage()]);
+        }
+    }
 
 
 }

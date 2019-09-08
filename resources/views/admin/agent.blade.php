@@ -33,8 +33,8 @@
                         content: [
                             nav,
                             {
-                                type: 'content',
-                                style: {background: '#ffffff', color: '#333', minHeight: window.innerHeight - 164},
+                                type: 'card',
+                                style: {background: '#ffffff', color: '#333', minHeight: window.innerHeight - 164, width: '100%'},
                                 content: '代理列表'
                             }
                         ]
