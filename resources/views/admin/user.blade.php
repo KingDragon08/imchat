@@ -11,6 +11,7 @@
         <div id="uf"></div>
 
     </body>
+    <script src="/js/base64.js"></script>
     <script src="/js/uf/dll.min.js"></script>
     <script src="/js/uf/antd.min.js"></script>
     <script src="/js/uf/uf.min.js"></script>
@@ -233,6 +234,15 @@
                                         {
                                             title: '签名',
                                             dataIndex: 'sign'
+                                        },
+                                        {
+                                            title: '分享码',
+                                            dataIndex: '_',
+                                            render: function (text, record) {
+                                                if (record) {
+                                                    return Base64.encode(record.id);
+                                                }
+                                            }
                                         },
                                         {
                                             title: '手机',
