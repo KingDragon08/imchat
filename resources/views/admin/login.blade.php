@@ -26,7 +26,7 @@
                 <div class="login-panel panel panel-default">
                     <div class="panel-heading">
                         <img src="/img/logo.png" width="50" />
-                        <h3 class="panel-title">imchat</h3>
+                        <h3 class="panel-title">LuckyVegas</h3>
                     </div>
                     <div class="panel-body">
                         <form action="javascript:;" onsubmit="login()">

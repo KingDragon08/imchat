@@ -1,4 +1,4 @@
-window.host = 'http://127.0.0.1/admin/';
+window.host = 'http://161.117.197.145/admin/';
 window.hrefs = window.location.href.split('/');
 window.href = hrefs[hrefs.length - 1];
 if (href == '') {

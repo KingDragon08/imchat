@@ -429,7 +429,7 @@ class NiuniuService {
             'bonusId' => $bonusId,
             'amount' => $gameInfo['amount'],
             'number' => $gameInfo['number'],
-            'ext' => '牛牛红包'
+            'ext' => 'LuckyVegas红包'
         ];
 
         $gameInfo['bonusId'] = $bonusId;
