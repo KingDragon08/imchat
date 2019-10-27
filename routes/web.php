@@ -154,12 +154,16 @@ Route::group(['middleware' => 'adminAuth', 'prefix' => 'admin', 'namespace' => '
     Route::get('/admin', 'AdminController@admin');
     Route::get('/agent', 'AdminController@agent');
     Route::get('/bet', 'AdminController@bet');
+    Route::get('/logout', 'AdminController@logout');
     // 用户相关接口
     Route::get('/userList', 'AdminController@userList');
     Route::post('/changeUserPassword', 'AdminController@changeUserPassword');
     Route::post('/changeUserJifen', 'AdminController@changeUserJifen');
     Route::post('/changeUserBonus', 'AdminController@changeUserBonus');
     Route::post('/delUser', 'AdminController@delUser');
+    Route::post('/addAdmin', 'AdminController@addAdmin');
+    Route::delete('/delAdmin', 'AdminController@delAdmin');
+    Route::any('/userJifenHistory', 'AdminController@userJifenHistory');
     // 房间相关接口
     Route::get('/roomList', 'AdminController@roomList');
     Route::post('/changeRoomRules', 'AdminController@changeRoomRules');

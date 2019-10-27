@@ -820,6 +820,7 @@ class NiuniuService {
                         $strs[] = '上局:' . floor($userInfo->jifen / 100) . ' 本局:' . floor(($userInfo->jifen + $tmp) / 100);
                         $userInfo->jifen += $tmp;
                         $userInfo->save();
+                        UserService::changeJifen($userInfo->id, $tmp, '游戏赢分', $game['id']);
                      } else {
                         $pei += 1;
                         // 能赔的最后一个
@@ -857,6 +858,7 @@ class NiuniuService {
                         $strs[] = '上局:' . floor($userInfo->jifen / 100) . ' 本局:' . floor(($userInfo->jifen + $tmp) / 100);
                         $userInfo->jifen += $tmp;
                         $userInfo->save();
+                        UserService::changeJifen($userInfo->id, $tmp, '游戏赢分', $game['id']);
                         break;
                      }
                 }
@@ -949,6 +951,7 @@ class NiuniuService {
                         
                         $userInfo->jifen = $userInfo->jifen + $tmp - $joiners[$i]['choushui'] - $joiners[$i]['bonus'];
                         $userInfo->save();
+                        UserService::changeJifen($userInfo->id, $tmp, '游戏输分', $game['id']);
                     }
                 }
                 $game['jifen'] = 0;
@@ -992,6 +995,7 @@ class NiuniuService {
                         $strs[] = '上局:' . floor($userInfo->jifen / 100) . ' 本局:' . floor(($userInfo->jifen + $tmp) / 100);
                         $userInfo->jifen += $tmp;
                         $userInfo->save();
+                        UserService::changeJifen($userInfo->id, $tmp, '游戏赢分', $game['id']);
                     }
                     // 平
                     if ($joiner['user'] == 0) {
@@ -1050,6 +1054,7 @@ class NiuniuService {
                         
                         $userInfo->jifen = $userInfo->jifen + $tmp - $joiners[$i]['choushui'] - $joiners[$i]['bonus'];
                         $userInfo->save();
+                        UserService::changeJifen($userInfo->id, $tmp, '游戏输分', $game['id']);
                     }
                 }
             }

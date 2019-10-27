@@ -144,6 +144,7 @@ CREATE TABLE `imchat`.`admin` (
   `password` VARCHAR(200) NOT NULL,
   `role` VARCHAR(45) NOT NULL DEFAULT 'agent' COMMENT 'Agent or admin',
   `created_time` VARCHAR(45) NULL,
+  `agent` VARCHAR(45) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`));
 
 CREATE TABLE `imchat`.`charge` (
@@ -165,3 +166,5 @@ CREATE TABLE `imchat`.`jifen_record` (
   `timestamp` VARCHAR(45) NOT NULL COMMENT '时间戳',
   PRIMARY KEY (`id`));
 
+ALTER TABLE `imchat`.`user` 
+ADD COLUMN `totalCharge` INT(11) NOT NULL DEFAULT 0 COMMENT '总充值额度' AFTER `shoukuanma`;

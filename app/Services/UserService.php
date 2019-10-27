@@ -588,17 +588,40 @@ class UserService {
      * @param  [type] $size [description]
      * @return [type]       [description]
      */
-    public static function getList($page, $size, $whereArr = []) {
+    public static function getList($page, $size, $whereArr = [], $static = false) {
         $data = UserModel::select('*');
         if (!empty($whereArr)) {
             $data = $data->where($whereArr);
         }
         $data = $data->orderBy('id', 'desc');
         $total = $data->count();
+
+        // 统计数据
+        if ($static) {
+            $tmp = [
+                'userNumber' => $total,
+                'totalJifen' => 0,
+                'totalBonus' => 0,
+                'totalCharge' => 0,
+                'totalYingkui' => 0
+            ];
+            $sql = 'sum(jifen) as totalJifen, '.
+                    'sum(bonus) as totalBonus, '.
+                    'sum(totalCharge) as totalCharge';
+            $tdata = UserModel::selectRaw($sql)->where($whereArr)->get()->toArray();
+            $tdata = $tdata[0];
+            $tmp['totalJifen'] = $tdata['totalJifen'];
+            $tmp['totalBonus'] = $tdata['totalBonus'];
+            $tmp['totalCharge'] = $tdata['totalCharge'];
+            $tmp['totalYingkui'] = $tmp['totalJifen'] + $tmp['totalBonus'] - $tmp['totalCharge'];
+        } else {
+            $tmp = [];
+        }
         $data = $data->skip(($page - 1) * $size)->take($size)->get()->toArray();
         return [
             'data' => $data,
-            'total' => $total
+            'total' => $total,
+            'static' => $tmp
         ];
     }
 
@@ -608,7 +631,7 @@ class UserService {
      * @param  [type] $jifen [description]
      * @return [type]        [description]
      */
-    public static function changeJifen($id, $jifen) {
+    public static function changeJifen($id, $jifen, $desc='后台上分', $gameId=-1) {
         DB::beginTransaction();
         try {
             $user = UserModel::find($id);
@@ -616,12 +639,16 @@ class UserService {
             // 分数变更
             $diffJifen = $jifen - $oJifen;
             $user->jifen = $jifen;
+            // 变更totalCharge
+            if ($gameId == -1 && $desc == '后台上分') {
+                $user->totalCharge += $diffJifen;
+            }
             $user->save();
             $jifenRecordModel = new JifenRecordModel();
             $jifenRecordModel->userId = $id;
             $jifenRecordModel->jifen = $diffJifen;
-            $jifenRecordModel->des = '后台上分';
-            $jifenRecordModel->gameId = -1;
+            $jifenRecordModel->des = $desc;
+            $jifenRecordModel->gameId = $gameId;
             $jifenRecordModel->timestamp = time();
             $jifenRecordModel->save();
             DB::commit();
@@ -651,6 +678,16 @@ class UserService {
     public static function delUser($id) {
         $user = UserModel::find($id);
         $user->delete();
+    }
+
+    public static function jifenHistory($id, $page=1, $size=10) {
+        $data = JifenRecordModel::select('*')->where('userId', $id);
+        $total = $data->count();
+        $data = $data->orderBy('id', 'desc')->skip(($page - 1) * $size)->take($size)->get()->toArray();
+        return [
+            'data' => $data,
+            'total' => $total
+        ];
     }
 
 

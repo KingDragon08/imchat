@@ -35,118 +35,149 @@
                             {
                                 type: 'card',
                                 style: {background: '#ffffff', color: '#333', minHeight: window.innerHeight - 164, width: '100%'},
-                                content: {
-                                    type: 'table',
-                                    name: 'admin-table',
-                                    bordered: true,
-                                    pagination: {
-                                        pageSize: 10,
-                                        pageType: 'client'
-                                    },
-                                    title: {
-                                        text: '管理员列表',
-                                        basicWidget: [
-                                            'setPageSize',
-                                            'export',
-                                            'switchTags',
-                                            'fullScreen'
-                                        ]
-                                    },
-                                    columns: [
-                                        {
-                                            title: 'ID',
-                                            dataIndex: 'id'
+                                content: [
+                                    {
+                                        type: 'table',
+                                        name: 'admin-table',
+                                        bordered: true,
+                                        pagination: {
+                                            pageSize: 10,
+                                            pageType: 'client'
                                         },
-                                        {
-                                            title: '用户名',
-                                            dataIndex: 'username',
-                                            editable: function (text, record) {
-                                                return {
-                                                    type: 'input',
-                                                    name: 'name',
-                                                    rules: {
-                                                        required: true
-                                                    },
-                                                    api: {
-                                                        url: '/admin/changeAdminName',
-                                                        method: 'put',
-                                                        paramsHandler: function () {
-                                                            return {
-                                                                id: record.id,
-                                                                name: UF('name').getValue()
-                                                            }
+                                        title: {
+                                            text: '管理员列表',
+                                            basicWidget: [
+                                                'setPageSize',
+                                                'export',
+                                                'switchTags',
+                                                'fullScreen'
+                                            ]
+                                        },
+                                        columns: [
+                                            {
+                                                title: 'ID',
+                                                dataIndex: 'id'
+                                            },
+                                            {
+                                                title: '用户名',
+                                                dataIndex: 'username',
+                                                // editable: function (text, record) {
+                                                //     return {
+                                                //         type: 'input',
+                                                //         name: 'name',
+                                                //         rules: {
+                                                //             required: true
+                                                //         },
+                                                //         api: {
+                                                //             url: '/admin/changeAdminName',
+                                                //             method: 'put',
+                                                //             paramsHandler: function () {
+                                                //                 return {
+                                                //                     id: record.id,
+                                                //                     name: UF('name').getValue()
+                                                //                 }
+                                                //             },
+                                                //             onSuccess: function (data) {
+                                                //                 UF('admin-table').refresh();
+                                                //             }
+                                                //         }
+                                                //     }
+                                                // }
+                                            },
+                                            {
+                                                title: '密码',
+                                                dataIndex: 'password',
+                                                width: 100,
+                                                ellipsis: true,
+                                                editable: function (text, record) {
+                                                    return {
+                                                        type: 'input',
+                                                        name: 'password',
+                                                        style: {
+                                                            width: '100px'
                                                         },
-                                                        onSuccess: function (data) {
-                                                            UF('admin-table').refresh();
+                                                        rules: {
+                                                            required: true,
+                                                            min: 6
+                                                        },
+                                                        api: {
+                                                            url: '/admin/changeAdminPassword',
+                                                            method: 'put',
+                                                            paramsHandler: function () {
+                                                                return {
+                                                                    id: record.id,
+                                                                    password: UF('password').getValue()
+                                                                }
+                                                            },
+                                                            onSuccess: function (data) {
+                                                                UF('admin-table').refresh();
+                                                            }
                                                         }
                                                     }
                                                 }
-                                            }
-                                        },
-                                        {
-                                            title: '密码',
-                                            dataIndex: 'password',
-                                            width: 100,
-                                            ellipsis: true,
-                                            editable: function (text, record) {
-                                                return {
-                                                    type: 'input',
-                                                    name: 'password',
-                                                    style: {
-                                                        width: '100px'
-                                                    },
-                                                    rules: {
-                                                        required: true,
-                                                        min: 6
-                                                    },
-                                                    api: {
-                                                        url: '/admin/changeAdminPassword',
-                                                        method: 'put',
-                                                        paramsHandler: function () {
-                                                            return {
-                                                                id: record.id,
-                                                                password: UF('password').getValue()
-                                                            }
-                                                        },
-                                                        onSuccess: function (data) {
-                                                            UF('admin-table').refresh();
+                                            },
+                                            {
+                                                title: '创建时间',
+                                                dataIndex: 'created_time',
+                                                render: function (text) {
+                                                    if (text) {
+                                                        Date.prototype.Format = function (fmt) {
+                                                            var o = {
+                                                                    "M+": this.getMonth() + 1, // 月份
+                                                                    "d+": this.getDate(), // 日
+                                                                    "h+": this.getHours(), // 小时
+                                                                    "m+": this.getMinutes(), // 分
+                                                                    "s+": this.getSeconds(), // 秒
+                                                                    "q+": Math.floor((this.getMonth() + 3) / 3), // 季度
+                                                                    "S": this.getMilliseconds() // 毫秒
+                                                            };
+                                                            if (/(y+)/.test(fmt))
+                                                                fmt = fmt.replace(RegExp.$1, (this.getFullYear() + ""));
+                                                            for (var k in o)
+                                                                if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+                                                            return fmt;
                                                         }
+                                                        return new Date(text * 1000).Format('yy-MM-dd hh:mm:ss');
                                                     }
+                                                }  
+                                            },
+                                            {
+                                                title: '角色',
+                                                dataIndex: 'role'
+                                            },
+                                            {
+                                                title: '操作',
+                                                dataIndex: '_operation',
+                                                render: function (text, record) {
+                                                    return {
+                                                        type: 'button',
+                                                        mode: 'failure',
+                                                        content: '删除',
+                                                        onClick: function () {
+                                                            UF.Modal.confirm({
+                                                                title: '提示',
+                                                                content: '确认删除？删除后不可恢复!!!',
+                                                                onOk: function () {
+                                                                    UF.ajax({
+                                                                        url: '/admin/delAdmin',
+                                                                        params: {
+                                                                            id: record.id
+                                                                        },
+                                                                        method: 'delete',
+                                                                        success: function () {
+                                                                            UF('admin-table').refresh();
+                                                                        }
+                                                                    });
+                                                                }
+                                                            });
+                                                        }
+                                                    };
                                                 }
                                             }
-                                        },
-                                        {
-                                            title: '创建时间',
-                                            dataIndex: 'created_time',
-                                            render: function (text) {
-                                                if (text) {
-                                                    Date.prototype.Format = function (fmt) {
-                                                        var o = {
-                                                                "M+": this.getMonth() + 1, // 月份
-                                                                "d+": this.getDate(), // 日
-                                                                "h+": this.getHours(), // 小时
-                                                                "m+": this.getMinutes(), // 分
-                                                                "s+": this.getSeconds(), // 秒
-                                                                "q+": Math.floor((this.getMonth() + 3) / 3), // 季度
-                                                                "S": this.getMilliseconds() // 毫秒
-                                                        };
-                                                        if (/(y+)/.test(fmt))
-                                                            fmt = fmt.replace(RegExp.$1, (this.getFullYear() + ""));
-                                                        for (var k in o)
-                                                            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
-                                                        return fmt;
-                                                    }
-                                                    return new Date(text * 1000).Format('yy-MM-dd hh:mm:ss');
-                                                }
-                                            }  
-                                        },
-                                        {
-                                            title: '角色',
-                                            dataIndex: 'role'
-                                        }
-                                    ],
-                                    source: '/admin/admins'
-                                }
+                                        ],
+                                        source: '/admin/admins'
+                                    }
+                                ]
                             }
                         ]
                     }

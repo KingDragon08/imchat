@@ -47,7 +47,7 @@ class AdminController extends Controller
             $request->session()->forget('token');
             $request->session()->forget('userInfo');
             UserService::logout($id);
-            return view('h5/login');
+            return view('admin/login');
             return response()->json(['status' => 0, 'msg' => 'ok']);
         } catch (Exception $e) {
             return response()->json(['status' => 1, 'msg' => '退出失败']);
@@ -115,6 +115,21 @@ class AdminController extends Controller
     }
 
     /**
+     * 添加管理员
+     * @param Request $request [description]
+     */
+    public function addAdmin(Request $request) {
+        $id = $request->id;
+        try {
+            AdminService::addAdmin($id);    
+            return response()->json(['status' => 0, 'msg' => 'ok']);
+        } catch (Exception $e) {
+            return response()->json(['status' => 1, 'msg' => $e->getMessage()]);
+        }
+        
+    }
+
+    /**
      * 用户列表
      * @param  Request $request [description]
      * @return [type]           [description]
@@ -127,14 +142,17 @@ class AdminController extends Controller
         $user = $request->input('user', null);
         try {
             $whereArr = [];
+            if ($userInfo->agent != '*') {
+                $whereArr[] = ['agent', '=', $userInfo->agent];
+            }
             if ($agent) {
                 $whereArr[] = ['agent', 'like', '%' . $agent . '%'];
             }
             if ($user) {
                 $whereArr[] = ['username', 'like', '%' . $user . '%'];
             }
-            $data = UserService::getList($page, $size, $whereArr);
-            return response()->json(['status' => 0, 'msg' => 'ok', 'data' => $data['data'], 'total' => $data['total']]);    
+            $data = UserService::getList($page, $size, $whereArr, true);
+            return response()->json(['status' => 0, 'msg' => 'ok', 'data' => $data['data'], 'total' => $data['total'], 'static' => [$data['static']]]);    
         } catch (Exception $e) {
             return response()->json(['status' => 1, 'msg' => $e->getMessage()]);
         }
@@ -161,7 +179,7 @@ class AdminController extends Controller
      */
     public function changeUserJifen(Request $request) {
         try {
-            UserService::changeJifen($request->id, $request->jifen);
+            UserService::changeJifen($request->id, $request->jifen * 100);
             return response()->json(['status' => 0, 'msg' => 'ok', 'data' => 'ok']);
         } catch (Exception $e) {
             return response()->json(['status' => 1, 'msg' => $e->getMessage()]);
@@ -196,6 +214,16 @@ class AdminController extends Controller
         }
     }
 
+    public function delAdmin(Request $request) {
+        try {
+            $this->checkAuth();
+            AdminService::delAdmin($request->id);
+            return response()->json(['status' => 0, 'msg' => 'ok', 'data' => 'ok']);
+        } catch (Exception $e) {
+            return response()->json(['status' => 1, 'msg' => $e->getMessage()]);   
+        }
+    }
+
     /**
      * 获取房间列表
      * @param  Request $request [description]
@@ -220,10 +248,22 @@ class AdminController extends Controller
      */
     public function changeRoomRules(Request $request) {
         try {
+            $this->checkAuth();
             AdminService::changeRoomRules($request->id, $request->rules);
             return response()->json(['status' => 0, 'msg' => 'ok', 'data' => 'ok']);
         } catch (Exception $e) {
             return response()->json(['status' => 1, 'msg' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * 检查管理员权限
+     * @return [type] [description]
+     */
+    public function checkAuth() {
+        $userInfo = AdminService::getUserInfo();
+        if ($userInfo->role != 'admin') {
+            throw new Exception("没有权限");
         }
     }
 
@@ -234,6 +274,7 @@ class AdminController extends Controller
      */
     public function delRoom(Request $request) {
         try {
+            $this->checkAuth();
             AdminService::delRoom($request->id);
             return response()->json(['status' => 0, 'msg' => 'ok', 'data' => 'ok']);
         } catch (Exception $e) {
@@ -302,6 +343,20 @@ class AdminController extends Controller
         } catch (Exception $e) {
             return response()->json(['status' => 1, 'msg' => $e->getMessage()]);
         }
+    }
+
+    /**
+     * 获取用户积分变动历史
+     * @param  Request $request [description]
+     * @return [type]           [description]
+     */
+    public function userJifenHistory(Request $request) {
+        try {
+            $data = UserService::jifenHistory($request->id, $request->input('page', 1), $request->input('size', 10));
+            return response()->json(['status' => 0, 'msg' => 'ok', 'data' => $data['data'], 'total' => $data['total']]);
+        } catch (Exception $e) {
+            return response()->json(['status' => 1, 'msg' => $e->getMessage()]);
+        }   
     }
 
 

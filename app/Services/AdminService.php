@@ -46,7 +46,7 @@ class AdminService {
      * @return [type]           [description]
      */
     public static function login(string $username, string $password) {
-        $data = AdminModel::select(['id', 'username', 'created_time', 'role'])
+        $data = AdminModel::select(['id', 'username', 'created_time', 'role', 'agent'])
                     ->where('username', $username)->where('password', md5($password))
                     ->get()->toArray();
         if (empty($data)) {
@@ -122,7 +122,12 @@ class AdminService {
      * @return [type] [description]
      */
     public static function getAdmins() {
-        $data = AdminModel::select('*')->where('role', 'admin')->orderBy('id', 'desc')->get()->toArray();
+        $userInfo = self::getUserInfo();
+        if ($userInfo->role == 'admin') {
+            $data = AdminModel::select('*')->orderBy('id', 'desc')->get()->toArray();    
+        } else {
+            $data = AdminModel::select('*')->where('id', $userInfo->id)->get()->toArray();
+        }
         return $data;
     }
 
@@ -148,6 +153,34 @@ class AdminService {
         $admin = AdminModel::find($id);
         $admin->password = md5($password);
         $admin->save();
+    }
+
+    /**
+     * 添加管理员
+     * @param [type] $id [description]
+     */
+    public static function addAdmin($id) {
+        $userInfo = UserModel::find($id);
+        $isExist = AdminModel::select('*')->where('username', $userInfo->username)->count();
+        if ($isExist) {
+            throw new Exception("已是代理");
+        }
+        $adminModel = new AdminModel();
+        $adminModel->username = $userInfo->username;
+        $adminModel->password = $userInfo->password;
+        $adminModel->created_time = time();
+        $adminModel->role = 'agent';
+        $adminModel->agent = base64_encode($id);
+        $adminModel->save();
+    }
+
+    /**
+     * 删除管理员
+     * @param  [type] $id [description]
+     * @return [type]     [description]
+     */
+    public static function delAdmin($id) {
+        AdminModel::find($id)->delete();
     }
 
 }
