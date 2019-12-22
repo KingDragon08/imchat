@@ -614,6 +614,10 @@ class UserService {
             $tmp['totalBonus'] = $tdata['totalBonus'];
             $tmp['totalCharge'] = $tdata['totalCharge'];
             $tmp['totalYingkui'] = $tmp['totalJifen'] + $tmp['totalBonus'] - $tmp['totalCharge'];
+            $ids = array_column($data->get()->toArray(), 'id');
+            $sql = 'sum(abs(jifen)) as totalLiushui';
+            $charge = JifenRecordModel::selectRaw($sql)->whereIn('userId', $ids)->get()->toArray()[0];
+            $tmp['totalLiushui'] = $charge['totalLiushui'];
         } else {
             $tmp = [];
         }

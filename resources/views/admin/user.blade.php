@@ -78,6 +78,13 @@
                                                 render: function (text) {
                                                     return text / 100;
                                                 }
+                                            },
+                                            {
+                                                title: '总流水',
+                                                dataIndex: 'totalLiushui',
+                                                render: function (text) {
+                                                    return text / 100;
+                                                }
                                             }
                                         ]
                                     },
@@ -398,7 +405,6 @@
                                         source: {
                                             url: '/admin/userList',
                                             onSuccess: function (data, res) {
-                                                console.log(res);
                                                 UF('statistic_table').set({
                                                     data: res.static
                                                 })
